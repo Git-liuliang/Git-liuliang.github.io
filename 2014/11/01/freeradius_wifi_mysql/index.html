@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="liuliangliang">
+    <meta name="keywords" content>
+    <title>freeradius wifi mysql认证 ~ Git-liuliang</title>
+    <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css?v=5.7.2">
+    <link rel="stylesheet" href="/lib/mdbootstrap/css/bootstrap.min.css?v=4.3.1">
+    <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css?v=4.8.7">
+    <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_l7tuu6qerl9.css">
+    
+        <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+    
+    <link rel="stylesheet" href="/css/main.css">
+
+    
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Git-liuliang</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style="background: url('/img/post.jpg')no-repeat center center;background-size: cover;">
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+            <br>
+            
+            <p>Saturday, November 1st 2014, 8:10 pm</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <link rel="stylesheet" href="/css/post.css">
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="d-none d-md-block col-md-2"></div>
+        <div class="col-md-8 m-auto board-cntr">
+            <div class="py-5 z-depth-3 board">
+                <div class="post-content markdown-body m-auto">
+                    <h3 id="radius协议："><a href="#radius协议：" class="headerlink" title="radius协议："></a>radius协议：</h3><blockquote>
+<p>RADIUS：Remote Authentication Dial In User Service，远程用户拨号认证系统由RFC2865，RFC2866定义，是目前应用最广泛的AAA协议。AAA是一种管理框架，因此，它可以用多种协议来实现。在实践中，人们最常使用远程访问拨号用户服务（Remote Authentication Dial In User Service，RADIUS）来实现AAA。</p>
+</blockquote>
+<p>这里通过部署freeradius，backend为mysql，存储数据，来实现用户认证登录wifi。</p>
+<h3 id="安装配置freeradius"><a href="#安装配置freeradius" class="headerlink" title="安装配置freeradius"></a>安装配置freeradius</h3><ol>
+<li><p><code>sudo apt-get update</code></p>
+</li>
+<li><p><code>sudo apt-get install freeradius freeradius-mysql</code><br>使用mysql作为backend，需要安装freeradius-mysql模块</p>
+</li>
+<li><p><code>sudo vim /etc/freeradius/sites-enabled/default</code><br>编辑default文件，注释掉files的相关行，取消注释sql的所有行，不要删除默认配置的任何行。  </p>
+</li>
+<li><p><code>sudo vim /etc/freeradius/sites-enabled/inner-tunnel</code><br>取消注释sql的所有行，不要删除默认配置的任何行。</p>
+</li>
+<li><p><code>sudo vim /etc/freeradius/radiusd.conf</code><br>编辑radius.conf，取消注释$INCLUDE sql.conf</p>
+</li>
+<li><p><code>sudo vim /etc/freeradius/sql.conf</code>  </p>
+<pre><code>sql {
+ database = &quot;mysql&quot;
+ server = &quot;localhost&quot;
+ login = &quot;radius&quot;
+ password = &quot;radpass&quot;
+ radius_db = &quot;radius&quot;
+ #uncomment read_groups
+ read_groups = yes
+ #uncomment readclients
+ readclients = yes
+}</code></pre><h3 id="安装配置mysql"><a href="#安装配置mysql" class="headerlink" title="安装配置mysql"></a>安装配置mysql</h3></li>
+<li><p><code>sudo apt-get install mysql-server</code><br>输入并重复新mysql root用户的密码</p>
+</li>
+<li><p><code>CREATE DATABASE radius;</code><br>创建radius的database </p>
+</li>
+<li><p><code>CREATE USER &#39;radius&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;radpass&#39;;</code><br>创建本地radius用户，密码</p>
+</li>
+<li><p><code>GRANT ALL PRIVILEGES ON *.* TO &#39;radius&#39;@&#39;localhost&#39;;</code><br>授权用户</p>
+</li>
+<li><p><code>FLUSH PRIVILEGES;</code></p>
+</li>
+<li><p><code>mysql -u root -p radius &lt; /etc/freeradius/sql/mysql/schema.sql;</code></p>
+</li>
+<li><p><code>mysql -u root -p radius &lt; /etc/freeradius/sql/mysql/nas.sql;</code><br>导入freeradius的sql文件</p>
+</li>
+<li><p><code>INSERT INTO nas VALUES (NULL , &#39;0.0.0.0/0, &#39;myNAS&#39;, &#39;other&#39;, NULL , &#39;testing123&#39;, NULL , NULL , &#39;RADIUS Client&#39;);</code></p>
+</li>
+<li><p><code>INSERT INTO radcheck (username, attribute, op, value) VALUES (&#39;thisuser&#39;, &#39;Cleartext-Password&#39;, &#39;:=&#39;, &#39;thispassword&#39;);</code></p>
+</li>
+<li><p><code>INSERT INTO radusergroup (username, groupname, priority) VALUES (&#39;thisuser&#39;, &#39;thisgroup&#39;, &#39;1&#39;);</code></p>
+</li>
+<li><p><code>INSERT INTO radgroupreply (groupname, attribute, op, value) VALUES (&#39;thisgroup&#39;, &#39;Service-Type&#39;, &#39;:=&#39;, &#39;Framed-User&#39;), (&#39;thisgroup&#39;, &#39;Framed-Protocol&#39;, &#39;:=&#39;, &#39;PPP&#39;), (&#39;thisgroup&#39;, &#39;Framed-Compression&#39;, &#39;:=&#39;, &#39;Van-Jacobsen-TCP-IP&#39;);</code><br>添加radius数据库中的数据</p>
+</li>
+</ol>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>clear-text password 测试<br>1.<code>radtest thisuser thispassword 127.0.0.1 1 testing123</code></p>
+<pre><code>ubuntu@ip-192-168-0-57:/etc/freeradius$ radtest thisuser thispassword 127.0.0.1 1 testing123
+Sent Access-Request Id 58 from 0.0.0.0:56965 to 127.0.0.1:1812 length 78
+    User-Name = &quot;thisuser&quot;
+    User-Password = &quot;thispassword&quot;
+    NAS-IP-Address = 192.168.0.57
+    NAS-Port = 1
+    Message-Authenticator = 0x00
+    Cleartext-Password = &quot;thispassword&quot;
+Received Access-Accept Id 58 from 127.0.0.1:1812 to 127.0.0.1:56965 length 38
+    Service-Type = Framed-User
+    Framed-Protocol = PPP
+    Framed-Compression = Van-Jacobson-TCP-IP</code></pre><p>测试通过后，可以使用测试路由器上配置实验了</p>
+<blockquote>
+<p>友情链接<br>1.<a href="https://www.vpsserver.com/community/tutorials/10/setup-and-configuration-of-freeradius-mysql-on-ubuntu-14-04-64bit/" target="_blank" rel="noopener">https://www.vpsserver.com/community/tutorials/10/setup-and-configuration-of-freeradius-mysql-on-ubuntu-14-04-64bit/</a><br>2.<a href="https://wiki.freeradius.org/guide/SQL-HOWTO-for-freeradius-3.x-on-Debian-Ubuntu" target="_blank" rel="noopener">https://wiki.freeradius.org/guide/SQL-HOWTO-for-freeradius-3.x-on-Debian-Ubuntu</a></p>
+</blockquote>
+
+                    <hr>
+                    <div>
+                        <p>
+                        
+                            <span class="badge badge-light">#&nbsp;devops</span>
+                            &nbsp;
+                        
+                        </p>
+                    </div>
+                    <br>
+                    
+                        <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" rel="nofollow noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- custom -->
+
+
+<!-- Comments -->
+<div class="comments" id="comments">
+
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank" rel="nofollow noopener"> <b>Material-T</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="/lib/mdbootstrap/js/jquery-3.4.1.min.js"></script>
+  <script src="/lib/mdbootstrap/js/popper.min.js"></script>
+  <script src="/lib/mdbootstrap/js/bootstrap.min.js?v=4.3.1"></script>
+  <script src="/lib/mdbootstrap/js/mdb.min.js?v=4.8.7"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="/lib/tocbot/tocbot.min.js?v=4.7.0"></script>
+    
+    <script src="/js/post.js"></script>
+  
+  
+    <script src="/lib/prettify/prettify.min.js?v=0.1.0"></script>
+    <script>
+      $(document).ready(function(){
+        $('pre').addClass('prettyprint linenums');
+        prettyPrint();
+      })
+    </script>
+  
+  
+    <script src="/lib/typed/typed.min.js?v=2.0.9"></script>
+    <script>
+        var typed = new Typed('#subtitle', {
+          strings: [
+            '  ',
+            "freeradius wifi mysql认证&nbsp;",
+        ],
+        cursorChar: "_",
+        typeSpeed: 70,
+        startDelay: 300, //开始之前延迟300毫秒
+        loop: false,
+        });
+        $(".typed-cursor").addClass("h2");
+    </script>
+  
+  
+    <script src="/lib/anchor/anchor.min.js?v=4.2.0"></script>
+    <script>
+      anchors.options = {
+        placement: "right",
+        visible: "false",
+        
+      };
+      anchors.add(".post-content > h1,h2,h3,h4,h5,h6");
+    </script>
+  
+</body>
+</html>

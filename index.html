@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+      
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="liuliangliang">
+    <meta name="keywords" content>
+    <title>Git-liuliang</title>
+    <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css?v=5.7.2">
+    <link rel="stylesheet" href="/lib/mdbootstrap/css/bootstrap.min.css?v=4.3.1">
+    <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css?v=4.8.7">
+    <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_l7tuu6qerl9.css">
+    
+        <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+    
+    <link rel="stylesheet" href="/css/main.css">
+
+    
+</head>
+
+
+<body>
+  <header style="height: 100vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Git-liuliang</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style="background: url('/img/index.jpg')no-repeat center center;background-size: cover;">
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+            <br>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <div class="container board-cntr">
+    <div class="py-5 z-depth-3 board">
+      
+      <div class="container">
+        <div class="row">
+          <div class="col-10 m-auto">
+            <link rel="stylesheet" href="/css/index.css">
+
+
+  <div class="row mb-4">
+  
+  
+    <div class="col-12 col-md-8 m-auto">
+        <a href="/2018/05/01/influxdb_granfa/">
+            <p class="h4 index-header">grafna influxdb 监控服务</p>
+            <div class="index-excerpt">
+              
+                <div class="index-text mb-1">python+influxdb+grafana监控系统Tips：    python收集数据，起udp client发送消息    python 起udp server接收数据，定时刷新通过graphite协议将数据发送到influxDB    grafana来展示influxDB的数据
+安装influxdbcurl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add -
+echo &quot;deb https://repos.influxdata.com/ubuntu trusty stable&quot; | sudo tee /etc/apt/sources.list.d/influxdb.list
+apt update
+apt install influxdb
+sudo service influxdb start
+
+配置influxdb详细配置参数信息参考官网https://docs.influxdata.com/influxdb/v1.7/administration/config/这里主要开启</div>
+              
+            </div>
+        </a>
+      
+      
+        <div>
+          <i class="iconfont icon-riqi2"></i>&nbsp;2018-05-01
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          
+              <i class="iconfont icon-cc-tag-more"></i>
+              
+                  devops&nbsp;
+              
+                  python&nbsp;
+              
+          
+        </div>
+      
+    </div>
+  </div>
+
+  <div class="row mb-4">
+  
+  
+    <div class="col-12 col-md-8 m-auto">
+        <a href="/2018/02/01/statsclient_learning/">
+            <p class="h4 index-header">influxdb监控之statsclient端介绍</p>
+            <div class="index-excerpt">
+              
+                <div class="index-text mb-1">statsclientstatsclient 是 statsd 系统的客户端。关于 statsd 的介绍参考: 
+https://www.jianshu.com/p/f6f18cc268a4,
+stats(client + server) + influxdb + grafana, 其中 statsclient 和 statsserver
+是自己用python写的。statsclient 会把数据传给 statsserver,
+statsserver 通过汇总等处理将数据存储到 influxdb, grafana 从 influxdb 获取数据
+进行可视化展示并提供报警功能。这里我们只介绍 statsclient 的使用。快速开始建立实例
+from gogo.common.statsclient import StatsClient
+
+# 默认
+stats_client = StatsClient()
+# 指定主机名和端口
+stats_client = StatsClient(host=&#39;192.168.8.1&#39;, port=8125)
+# 指定前缀
+stats_cli</div>
+              
+            </div>
+        </a>
+      
+      
+        <div>
+          <i class="iconfont icon-riqi2"></i>&nbsp;2018-02-01
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          
+              <i class="iconfont icon-cc-tag-more"></i>
+              
+                  devops&nbsp;
+              
+                  python&nbsp;
+              
+          
+        </div>
+      
+    </div>
+  </div>
+
+  <div class="row mb-4">
+  
+  
+    <div class="col-12 col-md-8 m-auto">
+        <a href="/2017/12/01/flask_source_request_context/">
+            <p class="h4 index-header">flask request 上下文源码解读</p>
+            <div class="index-excerpt">
+              
+                <div class="index-text mb-1">flask上下文涉及三个类，
+    1.存储东西的类 2.中介处理的类 3.真正处理的类1. app.run()
+2. run_simple(host, port, self, **options)
+3. def __call__(self, environ, start_response):
+        &quot;&quot;&quot;The WSGI server calls the Flask application object as the
+        WSGI application. This calls :meth:`wsgi_app` which can be
+        wrapped to applying middleware.&quot;&quot;&quot;
+        return self.wsgi_app(environ, start_response)
+4. def wsgi_app(self, environ, start_response):
+
+        ctx = self.request_context(envi</div>
+              
+            </div>
+        </a>
+      
+      
+        <div>
+          <i class="iconfont icon-riqi2"></i>&nbsp;2017-12-01
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          
+              <i class="iconfont icon-cc-tag-more"></i>
+              
+                  python&nbsp;
+              
+          
+        </div>
+      
+    </div>
+  </div>
+
+  <div class="row mb-4">
+  
+  
+    <div class="col-12 col-md-8 m-auto">
+        <a href="/2017/12/01/three_bitch/">
+            <p class="h4 index-header">cut awk sed 用法总结</p>
+            <div class="index-excerpt">
+              
+                <div class="index-text mb-1">awk sed cut grepcut learningcut以某种方式按照文件的行进行分割
+cut参数：
+
+-b 按照字节选取
+-c 按照字符选取
+-d 自定义分隔符，默认为制表符
+-f 与-d一起使用，指定显示的区域
+
+example：
+cat /etc/passwd | cut -b1-3 #取每行的第1-3字字节
+cat /etc/passwd | cut -b1-3,4-5,5-8 #获取每行的第1-3 4-5 5-8字节
+cat /etc/passwd | cut -d &quot;:&quot; -f 3 #以&quot;:&quot;分割取第三段
+cat /etc/passwd | cut -d &quot; &quot; -f 3 #以&quot; &quot;分割取第三段awk learningawk [options] [program] [file]
+
+awk -F &quot;:&quot; &#39;{print $1}&#39; file   #按照&quot;:&quot;将每行分割后，取每行的第一个字段，$0表示整行内容，$1表示1行，以此类推
+awk</div>
+              
+            </div>
+        </a>
+      
+      
+        <div>
+          <i class="iconfont icon-riqi2"></i>&nbsp;2017-12-01
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          
+              <i class="iconfont icon-cc-tag-more"></i>
+              
+                  devops&nbsp;
+              
+          
+        </div>
+      
+    </div>
+  </div>
+
+  <div class="row mb-4">
+  
+  
+    <div class="col-12 col-md-8 m-auto">
+        <a href="/2016/12/01/google_auth_python/">
+            <p class="h4 index-header">google oauth python 认证流程详解</p>
+            <div class="index-excerpt">
+              
+                <div class="index-text mb-1">一：从谷歌开发者控制台获得 OAuth 2.0 凭证  前往&#39;https://console.developers.google.com&#39;&gt;&gt;创建凭据&gt;&gt;选择Oauth客户端id&gt;&gt;网页应用&gt;&gt;输入域名和callback函数地址&gt;&gt;获取client_id以及client_sercert
+二：从谷歌授权服务器获得一个访问密钥   https://accounts.google.com/o/oauth2/auth?scope=%s&amp;response_type=code&amp;client_id=%s&amp;redirect_uri=%s&amp;hd=%s   其中scope为指定授权的范围，如希望获取用户信息scope=&#39;https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile&#39;   其中response_type=code，指返回的类型为code  其</div>
+              
+            </div>
+        </a>
+      
+      
+        <div>
+          <i class="iconfont icon-riqi2"></i>&nbsp;2016-12-01
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          
+              <i class="iconfont icon-cc-tag-more"></i>
+              
+                  devops&nbsp;
+              
+                  python&nbsp;
+              
+          
+        </div>
+      
+    </div>
+  </div>
+
+  <div class="row mb-4">
+  
+  
+    <div class="col-12 col-md-8 m-auto">
+        <a href="/2014/11/02/freeradius_vpn_mysql/">
+            <p class="h4 index-header">freeradius vpn mysql认证</p>
+            <div class="index-excerpt">
+              
+                <div class="index-text mb-1">
+这里实现使用搭建freeradius和mysql来验证vpn登录，实现L2TP由FreeRadius认证连接并由MySQL管理用户。
+
+配置L2TP服务确保完整安装L2TP/IPSec服务，并能正常连接确保sudo vim /etc/ipsec.secrets中的秘钥和freeradius里配置相同
+%any %any: PSK &quot;testing123&quot;安装配置freeradius这里具体讲还需要安装配置哪些内容
+vim /etc/freeradius/radiusd.conf
+将$INCLUDE clients.conf注释掉
+
+INSERT INTO radcheck (username, attribute, op, value) VALUES (&#39;leo&#39;, &#39;CHAP-Password&#39;, &#39;:=&#39;, &#39;7A21990FCD3D759941E45C490F143D5F&#39;); 
+注意，这里的CHAP-Password与之前的clear-password不同，原因是l2tp验证时传来的信息中没有</div>
+              
+            </div>
+        </a>
+      
+      
+        <div>
+          <i class="iconfont icon-riqi2"></i>&nbsp;2014-11-02
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          
+              <i class="iconfont icon-cc-tag-more"></i>
+              
+                  devops&nbsp;
+              
+          
+        </div>
+      
+    </div>
+  </div>
+
+  <div class="row mb-4">
+  
+  
+    <div class="col-12 col-md-8 m-auto">
+        <a href="/2014/11/01/freeradius_wifi_mysql/">
+            <p class="h4 index-header">freeradius wifi mysql认证</p>
+            <div class="index-excerpt">
+              
+                <div class="index-text mb-1">radius协议：
+RADIUS：Remote Authentication Dial In User Service，远程用户拨号认证系统由RFC2865，RFC2866定义，是目前应用最广泛的AAA协议。AAA是一种管理框架，因此，它可以用多种协议来实现。在实践中，人们最常使用远程访问拨号用户服务（Remote Authentication Dial In User Service，RADIUS）来实现AAA。
+
+这里通过部署freeradius，backend为mysql，存储数据，来实现用户认证登录wifi。
+安装配置freeradius
+sudo apt-get update
+
+sudo apt-get install freeradius freeradius-mysql使用mysql作为backend，需要安装freeradius-mysql模块
+
+sudo vim /etc/freeradius/sites-enabled/default编辑default文件，注释掉files的相关行，取消注释sql的所有行，不要删除默认配置的任何行。  
+
+sudo vim /etc</div>
+              
+            </div>
+        </a>
+      
+      
+        <div>
+          <i class="iconfont icon-riqi2"></i>&nbsp;2014-11-01
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          
+              <i class="iconfont icon-cc-tag-more"></i>
+              
+                  devops&nbsp;
+              
+          
+        </div>
+      
+    </div>
+  </div>
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank" rel="nofollow noopener"> <b>Material-T</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="/lib/mdbootstrap/js/jquery-3.4.1.min.js"></script>
+  <script src="/lib/mdbootstrap/js/popper.min.js"></script>
+  <script src="/lib/mdbootstrap/js/bootstrap.min.js?v=4.3.1"></script>
+  <script src="/lib/mdbootstrap/js/mdb.min.js?v=4.8.7"></script>
+  <script src="/js/main.js"></script>
+  
+  
+    <script src="/lib/prettify/prettify.min.js?v=0.1.0"></script>
+    <script>
+      $(document).ready(function(){
+        $('pre').addClass('prettyprint linenums');
+        prettyPrint();
+      })
+    </script>
+  
+  
+    <script src="/lib/typed/typed.min.js?v=2.0.9"></script>
+    <script>
+        var typed = new Typed('#subtitle', {
+          strings: [
+            '  ',
+            "生活明朗 万物可爱 人生值得 未来可期&nbsp;",
+        ],
+        cursorChar: "_",
+        typeSpeed: 70,
+        startDelay: 300, //开始之前延迟300毫秒
+        loop: false,
+        });
+        $(".typed-cursor").addClass("h2");
+    </script>
+  
+  
+    <script src="/lib/anchor/anchor.min.js?v=4.2.0"></script>
+    <script>
+      anchors.options = {
+        placement: "right",
+        visible: "false",
+        
+      };
+      anchors.add(".post-content > h1,h2,h3,h4,h5,h6");
+    </script>
+  
+</body>
+</html>

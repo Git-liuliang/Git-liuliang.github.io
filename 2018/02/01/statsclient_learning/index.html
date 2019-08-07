@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="liuliangliang">
+    <meta name="keywords" content>
+    <title>influxdb监控之statsclient端介绍 ~ Git-liuliang</title>
+    <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css?v=5.7.2">
+    <link rel="stylesheet" href="/lib/mdbootstrap/css/bootstrap.min.css?v=4.3.1">
+    <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css?v=4.8.7">
+    <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_l7tuu6qerl9.css">
+    
+        <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+    
+    <link rel="stylesheet" href="/css/main.css">
+
+    
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Git-liuliang</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style="background: url('/img/post.jpg')no-repeat center center;background-size: cover;">
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+            <br>
+            
+            <p>Thursday, February 1st 2018, 10:10 am</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <link rel="stylesheet" href="/css/post.css">
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="d-none d-md-block col-md-2"></div>
+        <div class="col-md-8 m-auto board-cntr">
+            <div class="py-5 z-depth-3 board">
+                <div class="post-content markdown-body m-auto">
+                    <h1 id="statsclient"><a href="#statsclient" class="headerlink" title="statsclient"></a>statsclient</h1><pre><code>statsclient 是 statsd 系统的客户端。关于 statsd 的介绍参考: 
+https://www.jianshu.com/p/f6f18cc268a4,
+stats(client + server) + influxdb + grafana, 其中 statsclient 和 statsserver
+是自己用python写的。statsclient 会把数据传给 statsserver,
+statsserver 通过汇总等处理将数据存储到 influxdb, grafana 从 influxdb 获取数据
+进行可视化展示并提供报警功能。这里我们只介绍 statsclient 的使用。</code></pre><h1 id="快速开始"><a href="#快速开始" class="headerlink" title="快速开始"></a>快速开始</h1><p>建立实例</p>
+<pre><code class="python">from gogo.common.statsclient import StatsClient
+
+# 默认
+stats_client = StatsClient()
+# 指定主机名和端口
+stats_client = StatsClient(host=&#39;192.168.8.1&#39;, port=8125)
+# 指定前缀
+stats_client = StatsClient(prefix=&#39;your_prefix&#39;)</code></pre>
+<h4 id="Counters"><a href="#Counters" class="headerlink" title="Counters"></a>Counters</h4><pre><code class="python">stats_client.incr(&#39;count_metric&#39;)  # 1
+stats_client.incr(&#39;count_metric&#39;, 10)  # 1 + 10 = 11
+stats_client.incr(&#39;count_metric&#39;)  # 11 + 1 = 12
+
+stats_client.decr(&#39;count_metric&#39;)  # 12 - 1 = 11</code></pre>
+<h4 id="Timer"><a href="#Timer" class="headerlink" title="Timer"></a>Timer</h4><pre><code class="python">stats_client.timing(&#39;time_metric&#39;, 10)
+
+# with 块儿中代码的执行时间会被记录到 time_metric 指标上
+with stats_client.timer(&#39;time_metric&#39;):
+    # do something</code></pre>
+<h4 id="Gauge"><a href="#Gauge" class="headerlink" title="Gauge"></a>Gauge</h4><pre><code class="python">stats_client.gauge(&#39;gauge_metric&#39;, 10)
+stats_client.gauge(&#39;gauge_metric&#39;, -5)</code></pre>
+<h4 id="Pipeline"><a href="#Pipeline" class="headerlink" title="Pipeline"></a>Pipeline</h4><pre><code class="python"># pipeline 里的指标会被批量发送
+with stats_client.pipeline() as pipeline:
+    pipeline.incr(&#39;count_metric&#39;)
+    pipeline.decr(&#39;count_metric&#39;)
+    pipeline.timing(&#39;time_metric&#39;)
+    pipeline.gauge(&#39;gauge_metric&#39;)
+
+    with pipeline.timer(&#39;time_metric&#39;):
+        # do something</code></pre>
+<h2 id="类介绍"><a href="#类介绍" class="headerlink" title="类介绍"></a>类介绍</h2><h2 id="StatsClient"><a href="#StatsClient" class="headerlink" title="StatsClient"></a>StatsClient</h2><pre><code class="python">class gogo.common.statsclient.StatsClient(
+    host=&#39;127.0.0.1&#39;,
+    port=8125,
+    prefix=None
+)</code></pre>
+<ul>
+<li>host 和 port: stats server 的主机地址。stats client 会把数据发送到这个地址。</li>
+<li>prefix: 指标前缀, 如果不为 None, 所有指标的前面都会加上 ‘prefix.’。</li>
+</ul>
+<pre><code class="python">stats_client = StatsClient(prefix=&#39;mertic_prefix&#39;)
+stats_client.incr(&#39;a.b&#39;)  # 实际的指标名称是 metric_prefix.a.b</code></pre>
+<p><strong>incr</strong>(stat, count=1, rate=1)</p>
+<ul>
+<li>rate: 采样率。如果小于 1, 发送的数据会按这个比例进行采样。</li>
+</ul>
+<pre><code class="python">stats_client = StatsClient()
+stats_client.incr(&#39;a.b&#39;, rate=0.5)  # 以 0.5 的比例采样</code></pre>
+<p><strong>decr</strong>(stat, count=1, rate=1)</p>
+<p><strong>gauge</strong>(stat, value, rate=1, delta=False)</p>
+<ul>
+<li>delta: True 表示累加模式, False 表示替换模式。</li>
+</ul>
+<pre><code class="python">stats_client = StatsClient()
+stats_client.gauge(&#39;a.b&#39;, 10)  # 10
+stats_client.gauge(&#39;a.b&#39;, 11)  # 11
+
+stats_client.gauge(&#39;c.d&#39;, 10, delta=True)  # 10
+stats_client.gauge(&#39;c.d&#39;, 11, delta=True)  # 10 + 11 = 21</code></pre>
+<p><strong>timing</strong>(stat, delta, rate=1)</p>
+<p><strong>pipeline</strong>()</p>
+<p><strong>timer</strong>(stat, rate=1)</p>
+
+                    <hr>
+                    <div>
+                        <p>
+                        
+                            <span class="badge badge-light">#&nbsp;devops</span>
+                            &nbsp;
+                        
+                            <span class="badge badge-light">#&nbsp;python</span>
+                            &nbsp;
+                        
+                        </p>
+                    </div>
+                    <br>
+                    
+                        <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" rel="nofollow noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- custom -->
+
+
+<!-- Comments -->
+<div class="comments" id="comments">
+
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank" rel="nofollow noopener"> <b>Material-T</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="/lib/mdbootstrap/js/jquery-3.4.1.min.js"></script>
+  <script src="/lib/mdbootstrap/js/popper.min.js"></script>
+  <script src="/lib/mdbootstrap/js/bootstrap.min.js?v=4.3.1"></script>
+  <script src="/lib/mdbootstrap/js/mdb.min.js?v=4.8.7"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="/lib/tocbot/tocbot.min.js?v=4.7.0"></script>
+    
+    <script src="/js/post.js"></script>
+  
+  
+    <script src="/lib/prettify/prettify.min.js?v=0.1.0"></script>
+    <script>
+      $(document).ready(function(){
+        $('pre').addClass('prettyprint linenums');
+        prettyPrint();
+      })
+    </script>
+  
+  
+    <script src="/lib/typed/typed.min.js?v=2.0.9"></script>
+    <script>
+        var typed = new Typed('#subtitle', {
+          strings: [
+            '  ',
+            "influxdb监控之statsclient端介绍&nbsp;",
+        ],
+        cursorChar: "_",
+        typeSpeed: 70,
+        startDelay: 300, //开始之前延迟300毫秒
+        loop: false,
+        });
+        $(".typed-cursor").addClass("h2");
+    </script>
+  
+  
+    <script src="/lib/anchor/anchor.min.js?v=4.2.0"></script>
+    <script>
+      anchors.options = {
+        placement: "right",
+        visible: "false",
+        
+      };
+      anchors.add(".post-content > h1,h2,h3,h4,h5,h6");
+    </script>
+  
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="liuliangliang">
+    <meta name="keywords" content>
+    <title>flask request 上下文源码解读 ~ Git-liuliang</title>
+    <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css?v=5.7.2">
+    <link rel="stylesheet" href="/lib/mdbootstrap/css/bootstrap.min.css?v=4.3.1">
+    <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css?v=4.8.7">
+    <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_l7tuu6qerl9.css">
+    
+        <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+    
+    <link rel="stylesheet" href="/css/main.css">
+
+    
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Git-liuliang</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style="background: url('/img/post.jpg')no-repeat center center;background-size: cover;">
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+            <br>
+            
+            <p>Friday, December 1st 2017, 8:10 pm</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <link rel="stylesheet" href="/css/post.css">
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="d-none d-md-block col-md-2"></div>
+        <div class="col-md-8 m-auto board-cntr">
+            <div class="py-5 z-depth-3 board">
+                <div class="post-content markdown-body m-auto">
+                    <h2 id="flask上下文"><a href="#flask上下文" class="headerlink" title="flask上下文"></a>flask上下文</h2><pre><code>涉及三个类，
+    1.存储东西的类 2.中介处理的类 3.真正处理的类</code></pre><pre><code>1. app.run()
+2. run_simple(host, port, self, **options)
+3. def __call__(self, environ, start_response):
+        &quot;&quot;&quot;The WSGI server calls the Flask application object as the
+        WSGI application. This calls :meth:`wsgi_app` which can be
+        wrapped to applying middleware.&quot;&quot;&quot;
+        return self.wsgi_app(environ, start_response)
+4. def wsgi_app(self, environ, start_response):
+
+        ctx = self.request_context(environ)
+        error = None
+        try:
+            try:
+                ctx.push()
+                response = self.full_dispatch_request()
+            except Exception as e:
+                error = e
+                response = self.handle_exception(e)
+            except:
+                error = sys.exc_info()[1]
+                raise
+            return response(environ, start_response)
+        finally:
+            if self.should_ignore_error(error):
+                error = None
+            ctx.auto_pop(error)</code></pre><p>#################################<br>ctx = self.request_context(environ)</p>
+<p>######将请求相关的东西给ctx</p>
+<pre><code>1. def request_context(self, environ):
+        &quot;&quot;&quot;Create a :class:`~flask.ctx.RequestContext` representing a
+        WSGI environment. Use a ``with`` block to push the context,
+        which will make :data:`request` point at this request.
+
+        See :doc:`/reqcontext`.
+
+        Typically you should not call this from your own code. A request
+        context is automatically pushed by the :meth:`wsgi_app` when
+        handling a request. Use :meth:`test_request_context` to create
+        an environment and context instead of this method.
+
+        :param environ: a WSGI environment
+        &quot;&quot;&quot;
+        return RequestContext(self, environ)
+2. RequestContext  __init__()
+3. app.request_class(environ)
+4. request_class = Request</code></pre><p>################################</p>
+<p>###############################<br>ctx.push()</p>
+<p>###########将ctx加入的字典</p>
+<h3 id="请求相关所有数据存入-request-ctx-stack"><a href="#请求相关所有数据存入-request-ctx-stack" class="headerlink" title="请求相关所有数据存入_request_ctx_stack"></a>请求相关所有数据存入_request_ctx_stack</h3><pre><code>1._request_ctx_stack.push(self)  
+2._request_ctx_stack = LocalStack()  
+3.LocalStack(）__init__()  
+4.self._local = Local()  
+5.LocalStack().push()  
+6.self._local.stack = rv = []  
+7.def __setattr__(self, name, value):  
+        ident = self.__ident_func__()  
+        storage = self.__storage__  
+        try:  
+            storage[ident][name] = value  
+        except KeyError:  
+            storage[ident] = {name: value}  
+8.rv.append(ctx)  </code></pre><p>###########################<br>ctx.auto_pop(error)</p>
+<p>##########<br>1._request_ctx_stack.pop(self)</p>
+<h4 id="总结上下文管理机制"><a href="#总结上下文管理机制" class="headerlink" title="总结上下文管理机制"></a>总结上下文管理机制</h4><pre><code>  1.threading.Local和flask的local，增加了greenlet的携程判断  
+  2.Local对象保存request值  
+  3.请求进来封装了两层 request_context里有request和session  
+  4.通过localstack将信息加到local  
+  5.localproxy是一个偏函数  </code></pre><p>请求到来：</p>
+<ul>
+<li>ctx = 封装RequestContext(request,session)</li>
+<li>ctx放入local中<br>执行视图函数</li>
+<li>导入request</li>
+<li>print(request) – localproxy对象的<strong>str</strong><br>  调用_lookup_req_object函数，去local中将RequestContext获取，再去RequestContext获取request<br>请求结束</li>
+<li>ctx.auto_pop()</li>
+<li>ctx从local中移除</li>
+</ul>
+
+                    <hr>
+                    <div>
+                        <p>
+                        
+                            <span class="badge badge-light">#&nbsp;python</span>
+                            &nbsp;
+                        
+                        </p>
+                    </div>
+                    <br>
+                    
+                        <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" rel="nofollow noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- custom -->
+
+
+<!-- Comments -->
+<div class="comments" id="comments">
+
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank" rel="nofollow noopener"> <b>Material-T</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="/lib/mdbootstrap/js/jquery-3.4.1.min.js"></script>
+  <script src="/lib/mdbootstrap/js/popper.min.js"></script>
+  <script src="/lib/mdbootstrap/js/bootstrap.min.js?v=4.3.1"></script>
+  <script src="/lib/mdbootstrap/js/mdb.min.js?v=4.8.7"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="/lib/tocbot/tocbot.min.js?v=4.7.0"></script>
+    
+    <script src="/js/post.js"></script>
+  
+  
+    <script src="/lib/prettify/prettify.min.js?v=0.1.0"></script>
+    <script>
+      $(document).ready(function(){
+        $('pre').addClass('prettyprint linenums');
+        prettyPrint();
+      })
+    </script>
+  
+  
+    <script src="/lib/typed/typed.min.js?v=2.0.9"></script>
+    <script>
+        var typed = new Typed('#subtitle', {
+          strings: [
+            '  ',
+            "flask request 上下文源码解读&nbsp;",
+        ],
+        cursorChar: "_",
+        typeSpeed: 70,
+        startDelay: 300, //开始之前延迟300毫秒
+        loop: false,
+        });
+        $(".typed-cursor").addClass("h2");
+    </script>
+  
+  
+    <script src="/lib/anchor/anchor.min.js?v=4.2.0"></script>
+    <script>
+      anchors.options = {
+        placement: "right",
+        visible: "false",
+        
+      };
+      anchors.add(".post-content > h1,h2,h3,h4,h5,h6");
+    </script>
+  
+</body>
+</html>

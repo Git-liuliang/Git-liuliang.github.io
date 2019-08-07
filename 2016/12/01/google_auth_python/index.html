@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content>
+    <meta name="author" content="liuliangliang">
+    <meta name="keywords" content>
+    <title>google oauth python 认证流程详解 ~ Git-liuliang</title>
+    <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css?v=5.7.2">
+    <link rel="stylesheet" href="/lib/mdbootstrap/css/bootstrap.min.css?v=4.3.1">
+    <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css?v=4.8.7">
+    <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_l7tuu6qerl9.css">
+    
+        <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+    
+    <link rel="stylesheet" href="/css/main.css">
+
+    
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/"><strong>Git-liuliang</strong></a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto text-center">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/archives/">Archives</a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/about/">About</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</nav>
+    <div class="view intro-2" style="background: url('/img/post.jpg')no-repeat center center;background-size: cover;">
+    <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+        <div class="container text-center white-text wow fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+            <br>
+            
+            <p>Thursday, December 1st 2016, 8:10 pm</p>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+  </header>
+
+  <main>
+  
+  <link rel="stylesheet" href="/css/post.css">
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="d-none d-md-block col-md-2"></div>
+        <div class="col-md-8 m-auto board-cntr">
+            <div class="py-5 z-depth-3 board">
+                <div class="post-content markdown-body m-auto">
+                    <h4 id="一：从谷歌开发者控制台获得-OAuth-2-0-凭证"><a href="#一：从谷歌开发者控制台获得-OAuth-2-0-凭证" class="headerlink" title="一：从谷歌开发者控制台获得 OAuth 2.0 凭证"></a>一：从谷歌开发者控制台获得 OAuth 2.0 凭证</h4><p>  <code>前往&#39;https://console.developers.google.com&#39;&gt;&gt;创建凭据&gt;&gt;选择Oauth客户端id&gt;&gt;网页应用&gt;&gt;输入域名和callback函数地址&gt;&gt;获取client_id以及client_sercert</code></p>
+<h4 id="二：从谷歌授权服务器获得一个访问密钥"><a href="#二：从谷歌授权服务器获得一个访问密钥" class="headerlink" title="二：从谷歌授权服务器获得一个访问密钥"></a>二：从谷歌授权服务器获得一个访问密钥</h4><p>   <code>https://accounts.google.com/o/oauth2/auth?scope=%s&amp;response_type=code&amp;client_id=%s&amp;redirect_uri=%s&amp;hd=%s</code><br>   <code>其中scope为指定授权的范围，如希望获取用户信息scope=&#39;https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile&#39;</code><br>   <code>其中response_type=code，指返回的类型为code</code><br>  <code>其中client_id为上一步client_id</code><br>   <code>其中redirect_uri为上一步的回调函数</code><br>   <code>其中hd为认证邮箱的后缀限制，可选</code>  </p>
+<h4 id="三：使用上一步返回的code，去请求acess-token"><a href="#三：使用上一步返回的code，去请求acess-token" class="headerlink" title="三：使用上一步返回的code，去请求acess_token"></a>三：使用上一步返回的code，去请求acess_token</h4><pre><code>post请求https://accounts.google.com/o/oauth2/token
+需要的参数有
+    &#39;code&#39;:code,
+    &#39;client_id&#39;: client_id,
+    &#39;client_secret&#39;: client_secret,
+    &#39;redirect_uri&#39;: redirect_uri,
+    &#39;grant_type&#39;:&#39;authorization_code&#39;,</code></pre><h4 id="四：使用上一步的access-token，获取用户信息"><a href="#四：使用上一步的access-token，获取用户信息" class="headerlink" title="四：使用上一步的access_token，获取用户信息"></a>四：使用上一步的access_token，获取用户信息</h4><pre><code>https://www.googleapis.com/oauth2/v1/userinfo?access_token=%s</code></pre><p>示例：</p>
+<pre><code>client_id = &#39;46842-ohl9n34rpmu416sl86gc6aac378m661v.apps.googleusercontent.com&#39;
+client_secret = &#39;~~~~~~~~N-PRy_SJGxdB&#39;
+redirect_uri=&#39;http://test-gitlab.yourdomain.com/login/callback&#39;
+scope=&#39;https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile&#39;
+
+
+import requests,json
+from flask import Flask,request
+from flask import redirect
+app = Flask(__name__)
+
+@app.route(&#39;/client/login&#39;,methods=[&#39;POST&#39;,&#39;GET&#39;])
+def client_login():
+    uri = &#39;https://accounts.google.com/o/oauth2/auth?scope=%s&amp;response_type=code&amp;client_id=%s&amp;redirect_uri=%s&amp;hd=%s&#39; %(scope,client_id,redirect_uri,&#39;yourdomain.com&#39;)
+    return redirect(uri)
+
+@app.route(&#39;/login/callback&#39;, methods=[&#39;POST&#39;, &#39;GET&#39;])
+def oauth():
+   code=request.args.get(&#39;code&#39;)
+   #google_api = &#39;https://www.googleapis.com/oauth2/v1/userinfo?access_token=%s&#39;%(code)
+   baseurl = &#39;https://accounts.google.com/o/oauth2/token&#39;
+   data = {
+        &#39;code&#39;:code,
+        &#39;client_id&#39;: client_id,
+        &#39;client_secret&#39;: client_secret,
+        &#39;redirect_uri&#39;: redirect_uri,
+        &#39;grant_type&#39;:&#39;authorization_code&#39;,
+    }
+   res = requests.post(url=baseurl,data=data)
+   info = json.loads(res.text)
+   print(info.get(&#39;access_token&#39;))
+   google_api = &#39;https://www.googleapis.com/oauth2/v1/userinfo?access_token=%s&#39;%(info.get(&#39;access_token&#39;))
+   return redirect(google_api)
+
+if __name__ == &#39;__main__&#39;:
+    app.run(host=&#39;0.0.0.0&#39;)
+
+</code></pre>
+                    <hr>
+                    <div>
+                        <p>
+                        
+                            <span class="badge badge-light">#&nbsp;devops</span>
+                            &nbsp;
+                        
+                            <span class="badge badge-light">#&nbsp;python</span>
+                            &nbsp;
+                        
+                        </p>
+                    </div>
+                    <br>
+                    
+                        <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" rel="nofollow noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-md-block col-md-2">
+            
+  <div id="toc" class="py-5">
+    <p class="h6"><i class="iconfont icon-toc" style="vertical-align:middle"></i> Toc:</p> 
+    <div id="tocbot"></div>
+  </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- custom -->
+
+
+<!-- Comments -->
+<div class="comments" id="comments">
+
+</div>
+  
+  </main>
+
+<footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/0x2e/Material-T" target="_blank" rel="nofollow noopener"> <b>Material-T</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+  <!-- SCRIPTS -->
+  <script src="/lib/mdbootstrap/js/jquery-3.4.1.min.js"></script>
+  <script src="/lib/mdbootstrap/js/popper.min.js"></script>
+  <script src="/lib/mdbootstrap/js/bootstrap.min.js?v=4.3.1"></script>
+  <script src="/lib/mdbootstrap/js/mdb.min.js?v=4.8.7"></script>
+  <script src="/js/main.js"></script>
+  
+    
+      <script src="/lib/tocbot/tocbot.min.js?v=4.7.0"></script>
+    
+    <script src="/js/post.js"></script>
+  
+  
+    <script src="/lib/prettify/prettify.min.js?v=0.1.0"></script>
+    <script>
+      $(document).ready(function(){
+        $('pre').addClass('prettyprint linenums');
+        prettyPrint();
+      })
+    </script>
+  
+  
+    <script src="/lib/typed/typed.min.js?v=2.0.9"></script>
+    <script>
+        var typed = new Typed('#subtitle', {
+          strings: [
+            '  ',
+            "google oauth python 认证流程详解&nbsp;",
+        ],
+        cursorChar: "_",
+        typeSpeed: 70,
+        startDelay: 300, //开始之前延迟300毫秒
+        loop: false,
+        });
+        $(".typed-cursor").addClass("h2");
+    </script>
+  
+  
+    <script src="/lib/anchor/anchor.min.js?v=4.2.0"></script>
+    <script>
+      anchors.options = {
+        placement: "right",
+        visible: "false",
+        
+      };
+      anchors.add(".post-content > h1,h2,h3,h4,h5,h6");
+    </script>
+  
+</body>
+</html>
