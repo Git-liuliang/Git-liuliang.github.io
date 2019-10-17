@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="">
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content>
+  <meta name="author" content="liuliangliang">
+  <meta name="keywords" content>
+  <title>vpn 搭建流程 ~ Git-liuliang</title>
+  <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css">
+  <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+  <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_qzomjdt8bmp.css">
+  
+    <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+  
+  <link rel="stylesheet" href="/css/main.css">
+
+  
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Git-liuliang</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">Archives</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">Categories</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">Tags</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">About</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+</nav>
+
+    <div class="view intro-2" id="background"
+         style="background: url('/img/default.png')no-repeat center center;
+           background-size: cover;
+           background-attachment: fixed;">
+      <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              <br>
+              <p class="mt-3">Friday, August 1st 2014, 4:10 am</p>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="py-5 z-depth-3" id="board">
+        <div class="post-content mx-auto">
+          <div class="markdown-body">
+            <h4 id="搭建L2TP-IPsec-VPN-过程"><a href="#搭建L2TP-IPsec-VPN-过程" class="headerlink" title="搭建L2TP/IPsec VPN 过程"></a>搭建L2TP/IPsec VPN 过程</h4><h3 id="安装部署ipsec"><a href="#安装部署ipsec" class="headerlink" title="安装部署ipsec"></a>安装部署ipsec</h3><pre><code>apt-get install openswan
+</code></pre><p>安装openswan也就是安装ipsec。但是如果你深入去了解，就知道openswan是一套方案</p>
+<h3 id="配置ipsec"><a href="#配置ipsec" class="headerlink" title="配置ipsec"></a>配置ipsec</h3><pre><code>1.sudo vim /etc/ipsec.conf
+添加如下配置即可，需注意left=yourip，这里的ip一般填写本机对应的公网ip，但是针对aws ec2或者aliyun的虚拟机时，需要填写虚拟机的私有ip，即使用ifconfig查看到的那个ip</code></pre><pre><code>version    2.0    
+config setup
+
+    dumpdir=/var/run/pluto/    
+    nat_traversal=yes
+    virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:25.0.0.0/8,%v6:fd00::/8,%v6:fe80::/10
+    oe=off
+    protostack=netkey
+
+
+conn L2TP-PSK-NAT
+    rightsubnet=vhost:%priv
+    also=L2TP-PSK-noNAT
+
+conn L2TP-PSK-noNAT
+    authby=secret
+    pfs=no
+    auto=add
+    keyingtries=3
+    rekey=no
+    ikelifetime=8h
+    keylife=1h
+    type=transport
+    left=192.168.0.57
+    leftprotoport=17/%any
+    right=%any
+    rightprotoport=17/%any
+</code></pre><pre><code>2.sudo vim /etc/ipsec.secrets
+这里是设置psk的地方，即客户端登陆时需要使用的密码。XXX.XXX.XXX.XXX一般也是本机对应的公网ip,但是针对aws ec2或者aliyun的虚拟机时，需要填写虚拟机的私有ip，即使用ifconfig查看到的那个ip</code></pre><pre><code>192.168.0.57 %any: PSK &quot;your password&quot;</code></pre><h3 id="运行ipsec"><a href="#运行ipsec" class="headerlink" title="运行ipsec"></a>运行ipsec</h3><pre><code>    sudo ipsec setup restart
+    sudo ipsec verify
+</code></pre><h3 id="安装部署ppp"><a href="#安装部署ppp" class="headerlink" title="安装部署ppp"></a>安装部署ppp</h3><pre><code>sudo apt-get install ppp
+</code></pre><h3 id="配置ppp"><a href="#配置ppp" class="headerlink" title="配置ppp"></a>配置ppp</h3><pre><code>1.sudo vim /etc/ppp/chap-secrets
+有两个星号，第一个表示以后所有使用PPP作为用户认证的服务，都可以使用这个用户名和密码，包括PPTP和L2TP都可以使用loginname。第二个星号表示这个用户可以从任何IP登录。如果你希望控制一下，可以把星号改成具体的值来限制。</code></pre><pre><code>loginname *  loginpassword  *</code></pre><h3 id="安装部署xl2tpd"><a href="#安装部署xl2tpd" class="headerlink" title="安装部署xl2tpd"></a>安装部署xl2tpd</h3><pre><code>sudo apt-get install xl2tpd
+</code></pre><h3 id="配置xl2tpd"><a href="#配置xl2tpd" class="headerlink" title="配置xl2tpd"></a>配置xl2tpd</h3><pre><code>1.sudo vim /etc/xl2tpd/xl2tpd.conf
+同样listen-addr里边需要填写对于Linux来说的“外网”ip，在亚马逊EC2系统是私有ip。可以从amazon的控制台查看，或者ifconfig查看。</code></pre><pre><code>[global]
+ipsec saref = yes
+listen-addr = 192.168.0.57
+[lns default]
+ip range = 192.168.1.2-192.168.1.100
+local ip = 192.168.1.1
+refuse chap = yes
+refuse pap = yes
+require authentication = yes
+ppp debug = yes
+pppoptfile = /etc/ppp/options.xl2tpd
+length bit = yes
+</code></pre><pre><code>2.sudo vim /etc/ppp/options.xl2tpd</code></pre><pre><code>require-mschap-v2
+ms-dns 8.8.8.8
+ms-dns 8.8.4.4
+asyncmap 0
+auth
+crtscts
+lock
+hide-password
+modem
+debug
+name l2tpd
+proxyarp
+lcp-echo-interval 30
+lcp-echo-failure 4
+</code></pre><h3 id="运行xl2tpd"><a href="#运行xl2tpd" class="headerlink" title="运行xl2tpd"></a>运行xl2tpd</h3><pre><code>service xl2tpd restart</code></pre><h3 id="配置sysctl"><a href="#配置sysctl" class="headerlink" title="配置sysctl"></a>配置sysctl</h3><pre><code>1.sudo vim /etc/sysctl.conf
+添加一下内容
+
+```</code></pre><p>net.ipv4.ip_forward = 1<br>net.ipv4.conf.default.rp_filter = 0<br>net.ipv4.conf.default.accept_source_route = 0<br>net.ipv4.conf.all.send_redirects = 0<br>net.ipv4.conf.default.send_redirects = 0<br>net.ipv4.conf.all.log_martians = 0<br>net.ipv4.conf.default.log_martians = 0<br>net.ipv4.conf.all.accept_redirects = 0<br>net.ipv4.conf.default.accept_redirects = 0<br>net.ipv4.icmp_ignore_bogus_error_responses = 1<br>    ```<br>    2.sudo sysctl -p<br>    使修改生效</p>
+<h3 id="last"><a href="#last" class="headerlink" title="last"></a>last</h3><pre><code>    sudo ipsec setup restart
+    tail -f /var/log/auth.log 查看日志
+</code></pre><p>最后还有一点，在amazon安全组对用到的端口放行，以使得客户端可以通过防火墙链接到虚拟机。现在实例中找到对应属于的安全组，然后再在安全组添加入站规则如下，其中来源选择任何位置</p>
+<p>UDP port 1701 (for L2TP)<br>UDP port 500 (for IKE)<br>UDP port 4500 (for IPSec over UDP)</p>
+<p>搭建工作完成了，如果按照我的流程一步一步来到话，相信你也会成功的，我自己就是按照这个流程一步一步在amazon linux搭建好的。</p>
+<p>这里用到的软件分别起这些作用：</p>
+<p>openswan(ipsec) : 提供一个密钥<br>ppp ：提供用户名和密码<br>xl2tpd ： 提供L2TP服务<br>sysctl ： 提供服务器内部转发<br>iptables ： 提供请求从服务器内部转向外部，外部响应转向服务器内部</p>
+<p>报错：</p>
+<pre><code>
+ERROR: netlink XFRM_MSG_DELPOLICY response for flow eroute_connection delete included errno 2: No such file or directory
+……
+deleting connection &quot;L2TP-PSK-NAT&quot;
+</code></pre><p>解决方法：</p>
+<ol>
+<li><p>修改 /etc/ipsec.conf ：修改 leftprotoport from 17/1701 to 17/%any</p>
+</li>
+<li><p>重启 ipsec 服务：/etc/init.d/ipsec restart</p>
+</li>
+</ol>
+
+            <hr>
+          </div>
+          <br>
+          <div>
+            
+            <p>
+              <i class="iconfont icon-tag"></i>
+              
+                <a class="hover-with-bg" href="/tags/devops">devops</a>
+              
+            </p>
+            
+              <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" rel="nofollow noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-none d-lg-block col-lg-2 toc-container">
+      
+  <div id="toc">
+    <p class="h4"><i class="far fa-list-alt"></i>&nbsp;TOC</p>
+    <div id="tocbot"></div>
+  </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- custom -->
+
+
+<!-- Comments -->
+<div class="col-lg-7 mx-auto nopadding-md">
+  <div class="container comments mx-auto" id="comments">
+    
+  </div>
+</div>
+
+    
+  </main>
+
+  
+    <a class="z-depth-1" id="scroll-top-button" href="#" role="button">
+      <i class="fa fa-chevron-up scroll-top-arrow" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"> <b>Fluid</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="/lib/jquery/jquery.min.js" ></script>
+<script src="/lib/popper/popper.min.js" ></script>
+<script src="/lib/bootstrap/js/bootstrap.min.js" ></script>
+<script src="/lib/mdbootstrap/js/mdb.min.js" ></script>
+<script src="/js/main.js" ></script>
+
+  <script src="/js/lazyload.js" ></script>
+
+
+  
+    <script src="/lib/tocbot/tocbot.min.js" ></script>
+  
+  <script src="/js/post.js" ></script>
+
+
+  <script src="/lib/prettify/prettify.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      $('pre').addClass('prettyprint linenums');
+      prettyPrint();
+    })
+  </script>
+
+
+  <script src="/lib/typed/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "vpn 搭建流程&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+  <script src="/lib/anchor/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "false",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      getSearchFile(path);
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script>
+    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent) || (/Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent))) {
+      $("#background").css("background-attachment", "scroll");
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="">
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content>
+  <meta name="author" content="liuliangliang">
+  <meta name="keywords" content>
+  <title>java之servlet源码初探 ~ Git-liuliang</title>
+  <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css">
+  <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+  <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_qzomjdt8bmp.css">
+  
+    <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+  
+  <link rel="stylesheet" href="/css/main.css">
+
+  
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Git-liuliang</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">Archives</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">Categories</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">Tags</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">About</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+</nav>
+
+    <div class="view intro-2" id="background"
+         style="background: url('/img/default.png')no-repeat center center;
+           background-size: cover;
+           background-attachment: fixed;">
+      <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              <br>
+              <p class="mt-3">Saturday, August 6th 2016, 7:40 pm</p>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="py-5 z-depth-3" id="board">
+        <div class="post-content mx-auto">
+          <div class="markdown-body">
+            <h2 id="servlet源码初探"><a href="#servlet源码初探" class="headerlink" title="servlet源码初探"></a>servlet源码初探</h2><h4 id="servlet为javaweb的三大组件之一，servlet作用："><a href="#servlet为javaweb的三大组件之一，servlet作用：" class="headerlink" title="servlet为javaweb的三大组件之一，servlet作用："></a>servlet为javaweb的三大组件之一，servlet作用：</h4><ul>
+<li>接收请求数据  </li>
+<li>处理请求  </li>
+<li>完成响应  </li>
+</ul>
+<h4 id="实现servlet的三种方式"><a href="#实现servlet的三种方式" class="headerlink" title="实现servlet的三种方式"></a>实现servlet的三种方式</h4><ul>
+<li>实现javax.servlet.Servlet接口</li>
+<li>继承javax.servlet.GenericServlet类</li>
+<li>继承javax.servlet.http.HttpServlet类</li>
+</ul>
+<h5 id="实现javax-servlet-Servlet接口"><a href="#实现javax-servlet-Servlet接口" class="headerlink" title="实现javax.servlet.Servlet接口"></a>实现javax.servlet.Servlet接口</h5><p>重写Servlet的五个方法</p>
+<pre><code class="$xslt">public class Aservlet implements Servlet {
+
+    /*
+    * 生命周期方法
+    * 在Servlet被创建后调用，并且只会被调用一次
+    * */
+    @Override
+    public void init(ServletConfig servletConfig) throws ServletException {
+        System.out.println(&quot;init.....&quot;);
+    }
+
+    /*
+     *
+     * 获取servlet的配置信息
+     * */
+    @Override
+    public ServletConfig getServletConfig() {
+        System.out.println(&quot;getServletConfig......&quot;);
+        return null;
+    }
+
+    /*
+     * 生命周期方法
+     * 每次处理请求都是在调用这个方法，故会被调用多次
+     * */
+    @Override
+    public void service(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+        System.out.println(&quot;service/.........&quot;);
+    }
+
+    /*
+     *
+     * 获取servlet的信息
+     * */
+    @Override
+    public String getServletInfo() {
+        System.out.println(&quot;getServletInfo.........&quot;);
+        return null;
+    }
+
+    /*
+     * 生命周期方法
+     * 在Servlet被销毁前调用，并且只会被调用一次
+     * */
+    @Override
+    public void destroy() {
+        System.out.println(&quot;destroy............&quot;);
+    }
+}</code></pre>
+<p>特性：</p>
+<ul>
+<li>单例，一个servlet类只有一个对象</li>
+<li>线程不安全</li>
+</ul>
+<p>注意:  </p>
+<ul>
+<li>servlet类由我们写</li>
+<li>servlet中的对象由tomcat创建</li>
+<li>servlet中的方法由tomcat来调用</li>
+</ul>
+<p>如何让浏览器访问servlet</p>
+<p>给Servlet配置servlet路径，这需要在web.xml中对servlet进行配置  </p>
+<pre><code>             &lt;servlet&gt;
+                 &lt;servlet-name&gt;xxx&lt;/servlet-name&gt;
+                 &lt;servlet-class&gt;com.servlet.now.Aservlet&lt;/servlet-class&gt;
+             &lt;/servlet&gt;
+             &lt;servlet-mapping&gt;
+                 &lt;servlet-name&gt;xxx&lt;/servlet-name&gt;
+                 &lt;url-pattern&gt;/Aservlet&lt;/url-pattern&gt;
+             &lt;/servlet-mapping&gt;</code></pre><h5 id="继承javax-servlet-GenericServlet类"><a href="#继承javax-servlet-GenericServlet类" class="headerlink" title="继承javax.servlet.GenericServlet类"></a>继承javax.servlet.GenericServlet类</h5><p>GenericServlet类对Servlet接口进行了重写，故我们只需要重写最重要的service方法即可<br>值得注意的是，在GenericServlet类中定义了init()方法，采用子类和父类共同构建，既可以避免子类覆盖父类中必须的方法，也可以提供给子类自定义的空间</p>
+<pre><code class="$xslt">public class Bservlet extends GenericServlet {
+
+    @Override
+        public void init() throws ServletException {
+             System.out.println(&quot;this is  my init......&quot;);
+        }
+
+    @Override
+    public void service(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+        System.out.println(&quot;this is service......&quot;);
+    }
+}</code></pre>
+<pre><code class="$xslt">//
+GenericServlet类中init()方法
+//
+
+package javax.servlet;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Enumeration;
+
+public abstract class GenericServlet implements Servlet, ServletConfig, Serializable {
+    private static final long serialVersionUID = 1L;
+    private transient ServletConfig config;
+
+    public GenericServlet() {
+    }
+
+    public void destroy() {
+    }
+
+    .......
+
+    public void init(ServletConfig config) throws ServletException {
+        this.config = config;
+        this.init();
+    }
+
+    public void init() throws ServletException {
+    }
+
+    ....
+}
+</code></pre>
+<h5 id="继承javax-servlet-http-HttpServlet类"><a href="#继承javax-servlet-http-HttpServlet类" class="headerlink" title="继承javax.servlet.http.HttpServlet类"></a>继承javax.servlet.http.HttpServlet类</h5><p>HttpServlet类继承了GenericServlet类,主要对service()方法进行了重写，在生命周期的service()<br>中强制转换参数为http相关的类型，然后调用本类的service()，本类的service()方法根据请求方式的不同，调用doGet()或者doPost()方法<br>这样，我们只需要实现doGet() doPost()等相关方法即可，根据源码显示，如果子类不实现doGet()，会返回405</p>
+<pre><code class="$xslt">//HttpServlet类中service()方法的实现细节
+
+
+package javax.servlet.http;
+
+
+public abstract class HttpServlet extends GenericServlet {
+    private static final long serialVersionUID = 1L;
+    private static final String METHOD_DELETE = &quot;DELETE&quot;;
+    private static final String METHOD_HEAD = &quot;HEAD&quot;;
+    private static final String METHOD_GET = &quot;GET&quot;;
+    private static final String METHOD_OPTIONS = &quot;OPTIONS&quot;;
+    private static final String METHOD_POST = &quot;POST&quot;;
+    private static final String METHOD_PUT = &quot;PUT&quot;;
+    private static final String METHOD_TRACE = &quot;TRACE&quot;;
+    private static final String HEADER_IFMODSINCE = &quot;If-Modified-Since&quot;;
+    private static final String HEADER_LASTMOD = &quot;Last-Modified&quot;;
+    private static final String LSTRING_FILE = &quot;javax.servlet.http.LocalStrings&quot;;
+    private static final ResourceBundle lStrings = ResourceBundle.getBundle(&quot;javax.servlet.http.LocalStrings&quot;);
+
+    public HttpServlet() {
+    }
+
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String protocol = req.getProtocol();
+        String msg = lStrings.getString(&quot;http.method_get_not_supported&quot;);
+        if (protocol.endsWith(&quot;1.1&quot;)) {
+            resp.sendError(405, msg);
+        } else {
+            resp.sendError(400, msg);
+        }
+
+    }
+ .........
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String protocol = req.getProtocol();
+        String msg = lStrings.getString(&quot;http.method_post_not_supported&quot;);
+        if (protocol.endsWith(&quot;1.1&quot;)) {
+            resp.sendError(405, msg);
+        } else {
+            resp.sendError(400, msg);
+        }
+
+    }
+
+
+
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String method = req.getMethod();
+        long lastModified;
+        if (method.equals(&quot;GET&quot;)) {
+            lastModified = this.getLastModified(req);
+            if (lastModified == -1L) {
+                this.doGet(req, resp);
+            } else {
+                long ifModifiedSince;
+                try {
+                    ifModifiedSince = req.getDateHeader(&quot;If-Modified-Since&quot;);
+                } catch (IllegalArgumentException var9) {
+                    ifModifiedSince = -1L;
+                }
+
+                if (ifModifiedSince &lt; lastModified / 1000L * 1000L) {
+                    this.maybeSetLastModified(resp, lastModified);
+                    this.doGet(req, resp);
+                } else {
+                    resp.setStatus(304);
+                }
+            }
+        } else if (method.equals(&quot;HEAD&quot;)) {
+            lastModified = this.getLastModified(req);
+            this.maybeSetLastModified(resp, lastModified);
+            this.doHead(req, resp);
+        } else if (method.equals(&quot;POST&quot;)) {
+            this.doPost(req, resp);
+        } else if (method.equals(&quot;PUT&quot;)) {
+            this.doPut(req, resp);
+        } else if (method.equals(&quot;DELETE&quot;)) {
+            this.doDelete(req, resp);
+        } else if (method.equals(&quot;OPTIONS&quot;)) {
+            this.doOptions(req, resp);
+        } else if (method.equals(&quot;TRACE&quot;)) {
+            this.doTrace(req, resp);
+        } else {
+            String errMsg = lStrings.getString(&quot;http.method_not_implemented&quot;);
+            Object[] errArgs = new Object[]{method};
+            errMsg = MessageFormat.format(errMsg, errArgs);
+            resp.sendError(501, errMsg);
+        }
+
+    }
+
+......
+    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+        HttpServletRequest request;
+        HttpServletResponse response;
+        try {
+            request = (HttpServletRequest)req;
+            response = (HttpServletResponse)res;
+        } catch (ClassCastException var6) {
+            throw new ServletException(lStrings.getString(&quot;http.non_http&quot;));
+        }
+
+        this.service(request, response);
+    }
+}
+</code></pre>
+<h4 id="httpservlet对象生命周期"><a href="#httpservlet对象生命周期" class="headerlink" title="httpservlet对象生命周期"></a>httpservlet对象生命周期</h4><ul>
+<li><p>一、创建Servlet对象的时机</p>
+<ol>
+<li>Servlet容器启动时：读取web.xml配置文件中的信息，构造指定的Servlet对象，创建ServletConfig对象，<br>同时将ServletConfig对象作为参数来调用Servlet对象的init方法。  </li>
+<li>在Servlet容器启动后：客户首次向Servlet发出请求，Servlet容器会判断内存中是否存在指定的Servlet对象，如果没有则创建它，然后根据客户的请求创建HttpRequest、HttpResponse对象，从而调用Servlet对象的service方法。  </li>
+<li>Servlet的类文件被更新后，重新创建Servlet，Servlet容器在启动时自动创建Servlet，这是由在web.xml文件中为Servlet设置的<load-on-startup>属性决定的。从中我们也能看到同一个类型的Servlet对象在Servlet容器中以单例的形式存在。  </load-on-startup></li>
+</ol>
+</li>
+<li><p>二、销毁Servlet对象的时机</p>
+<ol>
+<li>Servlet容器停止或者重新启动：Servlet容器调用Servlet对象的destroy方法来释放资源。  </li>
+</ol>
+</li>
+</ul>
+<h4 id="ServletContext"><a href="#ServletContext" class="headerlink" title="ServletContext"></a>ServletContext</h4><p>javaweb四大域对象：PageContext\ServletRequest\HttpSession\ServletContext<br>域对象必须有数据的存取功能，域对象内部有一个map用来存储数据</p>
+
+            <hr>
+          </div>
+          <br>
+          <div>
+            
+            <p>
+              <i class="iconfont icon-tag"></i>
+              
+                <a class="hover-with-bg" href="/tags/java">java</a>
+              
+            </p>
+            
+              <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" rel="nofollow noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-none d-lg-block col-lg-2 toc-container">
+      
+  <div id="toc">
+    <p class="h4"><i class="far fa-list-alt"></i>&nbsp;TOC</p>
+    <div id="tocbot"></div>
+  </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- custom -->
+
+
+<!-- Comments -->
+<div class="col-lg-7 mx-auto nopadding-md">
+  <div class="container comments mx-auto" id="comments">
+    
+  </div>
+</div>
+
+    
+  </main>
+
+  
+    <a class="z-depth-1" id="scroll-top-button" href="#" role="button">
+      <i class="fa fa-chevron-up scroll-top-arrow" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"> <b>Fluid</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="/lib/jquery/jquery.min.js" ></script>
+<script src="/lib/popper/popper.min.js" ></script>
+<script src="/lib/bootstrap/js/bootstrap.min.js" ></script>
+<script src="/lib/mdbootstrap/js/mdb.min.js" ></script>
+<script src="/js/main.js" ></script>
+
+  <script src="/js/lazyload.js" ></script>
+
+
+  
+    <script src="/lib/tocbot/tocbot.min.js" ></script>
+  
+  <script src="/js/post.js" ></script>
+
+
+  <script src="/lib/prettify/prettify.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      $('pre').addClass('prettyprint linenums');
+      prettyPrint();
+    })
+  </script>
+
+
+  <script src="/lib/typed/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "java之servlet源码初探&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+  <script src="/lib/anchor/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "false",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      getSearchFile(path);
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script>
+    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent) || (/Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent))) {
+      $("#background").css("background-attachment", "scroll");
+    }
+  </script>
+
+</body>
+</html>

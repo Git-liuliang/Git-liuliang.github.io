@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="">
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content>
+  <meta name="author" content="liuliangliang">
+  <meta name="keywords" content>
+  <title>java之jedis操作redis ~ Git-liuliang</title>
+  <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css">
+  <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+  <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_qzomjdt8bmp.css">
+  
+    <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+  
+  <link rel="stylesheet" href="/css/main.css">
+
+  
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Git-liuliang</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">Archives</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">Categories</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">Tags</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">About</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+</nav>
+
+    <div class="view intro-2"
+         style="background: url('/img/default.png')no-repeat center center;
+           background-size: cover;
+           background-attachment: fixed;">
+      <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              <br>
+              <p>Monday, October 2nd 2017, 10:12 am</p>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="py-5 z-depth-3" id="board">
+        <div class="post-content mx-auto">
+          <div class="markdown-body">
+            <h3 id="java之jedis操作redis"><a href="#java之jedis操作redis" class="headerlink" title="java之jedis操作redis"></a>java之jedis操作redis</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><pre><code>jedis客户端操作redis主要三种模式：单台模式、分片模式（ShardedJedis）、集群模式（BinaryJedisCluster） 
+ShardedJedis是通过一致性哈希来实现分布式缓存的，通过一定的策略把不同的key分配到不同的redis server上，达到横向扩展的目的。
+这里主要介绍使用ShardedJedisPool+ShardedJedis操作redis的方式</code></pre><h4 id="操作redis数据demo"><a href="#操作redis数据demo" class="headerlink" title="操作redis数据demo"></a>操作redis数据demo</h4><pre><code>package com.redis.demo;
+
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.JedisShardInfo;
+import redis.clients.jedis.ShardedJedis;
+import redis.clients.jedis.ShardedJedisPool;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class demo {
+
+
+    static JedisPoolConfig config;
+    static ShardedJedisPool sharedJedisPool;
+
+    static {
+        // 生成多机连接List
+        List&lt;JedisShardInfo&gt; shards = new ArrayList&lt;JedisShardInfo&gt;();
+
+        shards.add( new JedisShardInfo(&quot;192.168.17.131&quot;, 6379) );
+        shards.add( new JedisShardInfo(&quot;192.168.17.130&quot;, 6379) );
+
+        // 初始化连接池配置对象
+        config = new JedisPoolConfig();
+        config.setMaxIdle(10);
+        // 实例化连接池
+        sharedJedisPool = new ShardedJedisPool(config,shards);
+
+    }
+
+    public static void main(String[] args) {
+
+        // 从连接池获取Jedis连接
+        ShardedJedis shardedJedisConn = sharedJedisPool.getResource();
+        shardedJedisConn.set(&quot;happy&quot;, &quot;sunny&quot;);
+        System.out.println(shardedJedisConn.get(&quot;happy&quot;));
+        // 释放连接
+        close(shardedJedisConn, sharedJedisPool);
+    }
+
+
+
+    private static void close(ShardedJedis shardedJedis,ShardedJedisPool sharedJedisPool){
+        if(shardedJedis!=null &amp;&amp;sharedJedisPool!=null){
+            sharedJedisPool.returnResource(shardedJedis);
+        }
+        if(sharedJedisPool!=null){
+            sharedJedisPool.destroy();
+        }
+    }
+}
+
+
+</code></pre><h4 id="Redis常用命令"><a href="#Redis常用命令" class="headerlink" title="Redis常用命令"></a>Redis常用命令</h4><h6 id="1-连接操作命令"><a href="#1-连接操作命令" class="headerlink" title="1 连接操作命令"></a>1 连接操作命令</h6><ul>
+<li>quit：关闭连接（connection）</li>
+<li>auth：简单密码认证</li>
+<li>help cmd： 查看cmd帮助，例如：help quit</li>
+</ul>
+<h6 id="2-持久化"><a href="#2-持久化" class="headerlink" title="2 持久化"></a>2 持久化</h6><ul>
+<li>save：将数据同步保存到磁盘</li>
+<li>bgsave：将数据异步保存到磁盘</li>
+<li>lastsave：返回上次成功将数据保存到磁盘的Unix时戳</li>
+<li>shutdown：将数据同步保存到磁盘，然后关闭服务</li>
+</ul>
+<h6 id="3-远程服务控制"><a href="#3-远程服务控制" class="headerlink" title="3 远程服务控制"></a>3 远程服务控制</h6><ul>
+<li>info：提供服务器的信息和统计</li>
+<li>monitor：实时转储收到的请求</li>
+<li>slaveof：改变复制策略设置</li>
+<li>config：在运行时配置Redis服务器</li>
+</ul>
+<h6 id="4-对key操作的命令"><a href="#4-对key操作的命令" class="headerlink" title="4 对key操作的命令"></a>4 对key操作的命令</h6><ul>
+<li>exists(key)：确认一个key是否存在</li>
+<li>del(key)：删除一个key</li>
+<li>type(key)：返回值的类型</li>
+<li>keys(pattern)：返回满足给定pattern的所有key</li>
+<li>randomkey：随机返回key空间的一个</li>
+<li>keyrename(oldname, newname)：重命名key</li>
+<li>dbsize：返回当前数据库中key的数目</li>
+<li>expire：设定一个key的活动时间（s）</li>
+<li>ttl：获得一个key的活动时间</li>
+<li>select(index)：按索引查询</li>
+<li>move(key, dbindex)：移动当前数据库中的key到dbindex数据库</li>
+<li>flushdb：删除当前选择数据库中的所有key</li>
+<li>flushall：删除所有数据库中的所有key</li>
+</ul>
+<h6 id="5-String"><a href="#5-String" class="headerlink" title="5 String"></a>5 String</h6><ul>
+<li>set(key, value)：给数据库中名称为key的string赋予值value</li>
+<li>get(key)：返回数据库中名称为key的string的value</li>
+<li>getset(key, value)：给名称为key的string赋予上一次的value</li>
+<li>mget(key1, key2,…, key N)：返回库中多个string的value</li>
+<li>setnx(key, value)：添加string，名称为key，值为value</li>
+<li>setex(key, time, value)：向库中添加string，设定过期时间time</li>
+<li>mset(key N, value N)：批量设置多个string的值</li>
+<li>msetnx(key N, value N)：如果所有名称为key i的string都不存在</li>
+<li>incr(key)：名称为key的string增1操作</li>
+<li>incrby(key, integer)：名称为key的string增加integer</li>
+<li>decr(key)：名称为key的string减1操作</li>
+<li>decrby(key, integer)：名称为key的string减少integer</li>
+<li>append(key, value)：名称为key的string的值附加value</li>
+<li>substr(key, start, end)：返回名称为key的string的value的子串</li>
+</ul>
+<h6 id="6-List"><a href="#6-List" class="headerlink" title="6 List"></a>6 List</h6><ul>
+<li>rpush(key, value)：在名称为key的list尾添加一个值为value的元素</li>
+<li>lpush(key, value)：在名称为key的list头添加一个值为value的 元素</li>
+<li>llen(key)：返回名称为key的list的长度</li>
+<li>lrange(key, start, end)：返回名称为key的list中start至end之间的元素</li>
+<li>ltrim(key, start, end)：截取名称为key的list</li>
+<li>lindex(key, index)：返回名称为key的list中index位置的元素</li>
+<li>lset(key, index, value)：给名称为key的list中index位置的元素赋值</li>
+<li>lrem(key, count, value)：删除count个key的list中值为value的元素</li>
+<li>lpop(key)：返回并删除名称为key的list中的首元素</li>
+<li>rpop(key)：返回并删除名称为key的list中的尾元素</li>
+<li>blpop(key1, key2,… key N, timeout)：lpop命令的block版本。</li>
+<li>brpop(key1, key2,… key N, timeout)：rpop的block版本。</li>
+<li>rpoplpush(srckey, dstkey)：返回并删除名称为srckey的list的尾元素，并将该元素添加到名称为dstkey的list的头部</li>
+</ul>
+<h6 id="7-Set"><a href="#7-Set" class="headerlink" title="7 Set"></a>7 Set</h6><ul>
+<li>sadd(key, member)：向名称为key的set中添加元素member</li>
+<li>srem(key, member) ：删除名称为key的set中的元素member</li>
+<li>spop(key) ：随机返回并删除名称为key的set中一个元素</li>
+<li>smove(srckey, dstkey, member) ：移到集合元素</li>
+<li>scard(key) ：返回名称为key的set的基数</li>
+<li>sismember(key, member) ：member是否是名称为key的set的元素</li>
+<li>sinter(key1, key2,…key N) ：求交集</li>
+<li>sinterstore(dstkey, (keys)) ：求交集并将交集保存到dstkey的集合</li>
+<li>sunion(key1, (keys)) ：求并集</li>
+<li>sunionstore(dstkey, (keys)) ：求并集并将并集保存到dstkey的集合</li>
+<li>sdiff(key1, (keys)) ：求差集</li>
+<li>sdiffstore(dstkey, (keys)) ：求差集并将差集保存到dstkey的集合</li>
+<li>smembers(key) ：返回名称为key的set的所有元素</li>
+<li>srandmember(key) ：随机返回名称为key的set的一个元素</li>
+</ul>
+<h6 id="8-Hash"><a href="#8-Hash" class="headerlink" title="8 Hash"></a>8 Hash</h6><ul>
+<li>hset(key, field, value)：向名称为key的hash中添加元素field</li>
+<li>hget(key, field)：返回名称为key的hash中field对应的value</li>
+<li>hmget(key, (fields))：返回名称为key的hash中field i对应的value</li>
+<li>hmset(key, (fields))：向名称为key的hash中添加元素field</li>
+<li>hincrby(key, field, integer)：将名称为key的hash中field的value增加integer</li>
+<li>hexists(key, field)：名称为key的hash中是否存在键为field的域</li>
+<li>hdel(key, field)：删除名称为key的hash中键为field的域</li>
+<li>hlen(key)：返回名称为key的hash中元素个数</li>
+<li>hkeys(key)：返回名称为key的hash中所有键</li>
+<li>hvals(key)：返回名称为key的hash中所有键对应的value</li>
+<li>hgetall(key)：返回名称为key的hash中所有的键（field）及其对应的value</li>
+</ul>
+<pre><code></code></pre>
+            <hr>
+          </div>
+          <br>
+          <div>
+            
+            <p>
+              <i class="iconfont icon-tag"></i>
+              
+                <a class="hover-with-bg" href="/tags/java">java</a>
+              
+                <a class="hover-with-bg" href="/tags/database">database</a>
+              
+            </p>
+            
+              <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" rel="nofollow noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-none d-lg-block col-lg-2 toc-container">
+      
+  <div id="toc">
+    <p class="h4"><i class="far fa-list-alt"></i>&nbsp;TOC</p>
+    <div id="tocbot"></div>
+  </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- custom -->
+
+
+<!-- Comments -->
+<div class="col-lg-7 mx-auto nopadding-md">
+  <div class="container comments mx-auto" id="comments">
+    
+  </div>
+</div>
+
+    
+  </main>
+
+  
+    <a class="z-depth-1" id="scroll-top-button" href="#" role="button">
+      <i class="fa fa-chevron-up scroll-top-arrow" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"> <b>Fluid</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/popper/popper.min.js"></script>
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+<script src="/lib/mdbootstrap/js/mdb.min.js"></script>
+<script src="/js/main.js"></script>
+
+  
+    <script src="/lib/tocbot/tocbot.min.js"></script>
+  
+  <script src="/js/post.js"></script>
+
+
+  <script src="/lib/prettify/prettify.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('pre').addClass('prettyprint linenums');
+      prettyPrint();
+    })
+  </script>
+
+
+  <script src="/lib/typed/typed.min.js"></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "java之jedis操作redis&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+  <script src="/lib/anchor/anchor.min.js"></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "false",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script src="/js/local-search.js"></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      getSearchFile(path);
+      this.onclick = null
+    }
+  </script>
+
+
+</body>
+</html>

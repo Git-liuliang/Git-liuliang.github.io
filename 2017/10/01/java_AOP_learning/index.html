@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="">
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content>
+  <meta name="author" content="liuliangliang">
+  <meta name="keywords" content>
+  <title>java之代理模式 ~ Git-liuliang</title>
+  <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css">
+  <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+  <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_qzomjdt8bmp.css">
+  
+    <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+  
+  <link rel="stylesheet" href="/css/main.css">
+
+  
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Git-liuliang</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">Archives</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">Categories</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">Tags</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">About</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+</nav>
+
+    <div class="view intro-2" id="background"
+         style="background: url('/img/default.png')no-repeat center center;
+           background-size: cover;
+           background-attachment: fixed;">
+      <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              <br>
+              <p class="mt-3">Sunday, October 1st 2017, 4:10 am</p>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="py-5 z-depth-3" id="board">
+        <div class="post-content mx-auto">
+          <div class="markdown-body">
+            <h2 id="java之代理模式"><a href="#java之代理模式" class="headerlink" title="java之代理模式"></a>java之代理模式</h2><ul>
+<li><ol>
+<li>静态代理  </li>
+</ol>
+</li>
+<li><ol start="2">
+<li>动态代理  </li>
+</ol>
+</li>
+<li><ol start="3">
+<li>spring aop思考  </li>
+</ol>
+</li>
+</ul>
+<h3 id="环境沉浸"><a href="#环境沉浸" class="headerlink" title="环境沉浸"></a>环境沉浸</h3><pre><code>1. 现在我有两个服务，分别是朋友圈评论功能和朋友圈点赞功能，想要不改变原有代码的基础上，实现功能前登录以及功能后输出日志的需求
+2. 这是朋友圈评论的功能
+
+Comment接口类
+```
+package com.dynamoProxy;
+
+public interface Comment {
+    //添加评论的方法
+    void add(String msg,String user);
+    //删除评论方法
+    void delete(String msgId);
+}
+
+```
+Comment接口实现类
+```
+    package com.dynamoProxy;
+
+    public class CommentImpl implements Comment {
+
+        @Override
+        public void add(String msg, String user) {
+            System.out.println(&quot;我要给&quot;+user+&quot;添加一条评论:&quot;+msg);
+        }
+
+        @Override
+        public void delete(String msgId) {
+            System.out.println(&quot;我删除了&quot;+msgId+&quot;这条评论&quot;);
+        }
+    }
+
+```</code></pre><h4 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h4><pre><code>使用CommentProxy实现Comment类，构造器中接收实现Comment的任意对象，并赋值给this.comment，在add方法前后添加登录和日志记录方法，基本实现了需求
+
+Comment静态代理类        </code></pre><pre><code>    package com.dynamoProxy;
+
+    public class CommentProxy implements Comment {
+
+        private Comment comment;
+
+        public CommentProxy(Comment comment){
+            this.comment = comment;
+        }
+        @Override
+        public void add(String msg, String user) {
+            precomment();
+            comment.add(msg,user);
+            endcomment();
+        }
+
+        @Override
+        public void delete(String msgId) {
+            comment.delete(msgId);
+            endcomment();
+        }
+
+
+        private void precomment(){
+            System.out.println(&quot;实现登录模块&quot;);
+        }
+        private void endcomment(){
+            System.out.println(&quot;输出日志&quot;);
+        }
+
+
+    }
+
+</code></pre><pre><code>Comment静态代理测试类
+```
+    package com.dynamoProxy;</code></pre><p>public class testDemo {<br>    public static void main(String[] args) {</p>
+<pre><code>   CommentProxy commentProxy = new CommentProxy(new CommentImpl());
+   commentProxy.add(&quot;这首说好不哭真好听&quot;,&quot;周杰伦&quot;);
+   commentProxy.delete(&quot;11012&quot;);
+
+}</code></pre><p>}</p>
+<pre><code>```</code></pre><h4 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h4><pre><code>上面的静态代理满足需求后，我们希望给点赞功能也实现登录和日志的代理，但是此时需要再次写一个PariseProxy的类，继承Parise的接口，并接收Parise的对象。如果我们由很多功能的话，这会造成一定的代码冗余，因此，动态代理走上舞台,我们需要通过反射来让代理类自己获取要代理的类以及该类的方法，这里需要实现InvocationHandler接口</code></pre><pre><code>
+    package com.dynamoProxy;
+
+    import java.lang.reflect.InvocationHandler;
+    import java.lang.reflect.Method;
+    import java.lang.reflect.Proxy;
+
+    public class DynamCommentProxy implements InvocationHandler {
+
+        private Object target;
+
+        public  Object bind(Object object){
+            this.target = object;
+            return Proxy.newProxyInstance(this.target.getClass().getClassLoader(),this.target.getClass().getInterfaces(),this);
+        }
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            Object result = null;
+            precomment();
+            method.invoke(this.target,args);
+            endcomment();
+            return result;
+        }
+
+        private void precomment(){
+            System.out.println(&quot;// something you want to do before comment&quot;);
+        }
+        private void endcomment(){
+            System.out.println(&quot;// something you want to do before comment&quot;);
+        }
+
+    }
+
+</code></pre><p>动态代理测试类</p>
+<pre><code>    package com.dynamoProxy;
+
+public class testDemo {
+    public static void main(String[] args) {
+
+        DynamCommentProxy dynamCommentProxy = new DynamCommentProxy();
+        Comment comment = (Comment) dynamCommentProxy.bind(new CommentImpl());
+        comment.delete(&quot;111&quot;);
+        Parise parise = (Parise)  dynamCommentProxy.bind(new PariseImpl());
+        parise.up();
+
+    }
+}
+</code></pre><h4 id="spring-AOP"><a href="#spring-AOP" class="headerlink" title="spring AOP"></a>spring AOP</h4><pre><code>上面的动态代理实现了，可以代理不同的服务，实现登录和日志，但是登录和日志写死在了动态代理的类中，我们是否可以将其解耦，不仅让代理对象可以改变，让代理功能也可以改变
+
+- 实现代理功能
+```
+package com.dynamoProxy;
+
+public interface Login {
+    void preLogin();
+    void endLogin();
+}
+
+```
+```
+package com.dynamoProxy;
+
+public class LoginImpl implements Login {
+    @Override
+    public void preLogin() {
+        System.out.println(&quot;login开始&quot;);
+    }
+
+    @Override
+    public void endLogin() {
+        System.out.println(&quot;login结束&quot;);
+    }
+}
+```
+```
+package com.dynamoProxy;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
+public class LastProxy implements InvocationHandler {
+
+    //调用对象
+    private Object proxy;
+    //目标对象
+    private Object target;
+
+    public Object bind(Object target, Object proxy) {
+        this.target = target;
+        this.proxy = proxy;
+        return Proxy.newProxyInstance(this.target.getClass().getClassLoader(), this.target.getClass().getInterfaces(), this);
+    }
+
+
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        Object result = null;
+        //反射得到操作者的实例
+        Class clazz = this.proxy.getClass();
+        //反射得到操作者的preLogin方法
+        Method start = clazz.getDeclaredMethod(&quot;preLogin&quot;);
+        //反射执行start方法
+        start.invoke(this.proxy);
+        //执行要处理对象的原本方法
+        method.invoke(this.target, args);
+        //反射得到操作者的endLogin方法
+        Method end = clazz.getDeclaredMethod(&quot;endLogin&quot;);
+        //反射执行end方法
+        end.invoke(this.proxy);
+        return result;
+    }
+}
+
+
+```</code></pre><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><pre><code>理解了代理模式之后，再来看看spring AOP，它需要我们在配置文件中配置哪些东西就一目了然了
+- 配置目标对象 即上面的CommentImpl类
+- 配置advice对象 即上面的LoginImpl类
+- 配置ProxyFactoryBean对象 即我们的LastProxy类，只不过这个类，spring已经帮我们写了。我们只需要传递一些参数进去即可，
+
+spring AOP的代理模式有两种JDKProxy和CGLIBProxy，默认使用JDKProxy，JDKProxy是基于接口的，实现类必须实现接口</code></pre>
+            <hr>
+          </div>
+          <br>
+          <div>
+            
+            <p>
+              <i class="iconfont icon-tag"></i>
+              
+                <a class="hover-with-bg" href="/tags/java">java</a>
+              
+            </p>
+            
+              <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" rel="nofollow noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-none d-lg-block col-lg-2 toc-container">
+      
+  <div id="toc">
+    <p class="h4"><i class="far fa-list-alt"></i>&nbsp;TOC</p>
+    <div id="tocbot"></div>
+  </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- custom -->
+
+
+<!-- Comments -->
+<div class="col-lg-7 mx-auto nopadding-md">
+  <div class="container comments mx-auto" id="comments">
+    
+  </div>
+</div>
+
+    
+  </main>
+
+  
+    <a class="z-depth-1" id="scroll-top-button" href="#" role="button">
+      <i class="fa fa-chevron-up scroll-top-arrow" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"> <b>Fluid</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="/lib/jquery/jquery.min.js" ></script>
+<script src="/lib/popper/popper.min.js" ></script>
+<script src="/lib/bootstrap/js/bootstrap.min.js" ></script>
+<script src="/lib/mdbootstrap/js/mdb.min.js" ></script>
+<script src="/js/main.js" ></script>
+
+  <script src="/js/lazyload.js" ></script>
+
+
+  
+    <script src="/lib/tocbot/tocbot.min.js" ></script>
+  
+  <script src="/js/post.js" ></script>
+
+
+  <script src="/lib/prettify/prettify.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      $('pre').addClass('prettyprint linenums');
+      prettyPrint();
+    })
+  </script>
+
+
+  <script src="/lib/typed/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "java之代理模式&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+  <script src="/lib/anchor/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "false",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      getSearchFile(path);
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script>
+    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent) || (/Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent))) {
+      $("#background").css("background-attachment", "scroll");
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="">
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content>
+  <meta name="author" content="liuliangliang">
+  <meta name="keywords" content>
+  <title>ajax使用及数据转换 ~ Git-liuliang</title>
+  <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css">
+  <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+  <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_qzomjdt8bmp.css">
+  
+    <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+  
+  <link rel="stylesheet" href="/css/main.css">
+
+  
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Git-liuliang</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">Archives</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">Categories</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">Tags</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">About</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+</nav>
+
+    <div class="view intro-2" id="background"
+         style="background: url('/img/default.png')no-repeat center center;
+           background-size: cover;
+           background-attachment: fixed;">
+      <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              <br>
+              <p class="mt-3">Monday, August 29th 2016, 7:20 pm</p>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="py-5 z-depth-3" id="board">
+        <div class="post-content mx-auto">
+          <div class="markdown-body">
+            <h2 id="ajax使用及数据转换"><a href="#ajax使用及数据转换" class="headerlink" title="ajax使用及数据转换"></a>ajax使用及数据转换</h2><h3 id="1-ajax是什么"><a href="#1-ajax是什么" class="headerlink" title="1. ajax是什么"></a>1. ajax是什么</h3><ul>
+<li>asynchronous javascript and xml：异步的js和xml</li>
+<li>它能使用js访问服务器，而且是异步访问！</li>
+<li>服务器给客户端的响应一般是整个页面，一个html完整页面！但在ajax中因为是局部刷新，那么服务器就不用再响应整个页面！而只是数据！</li>
+</ul>
+<h3 id="ajax发送请求的基本步骤"><a href="#ajax发送请求的基本步骤" class="headerlink" title="ajax发送请求的基本步骤"></a>ajax发送请求的基本步骤</h3><h4 id="1-第一步（得到XMLHttpRequest）"><a href="#1-第一步（得到XMLHttpRequest）" class="headerlink" title="1. 第一步（得到XMLHttpRequest）"></a>1. 第一步（得到XMLHttpRequest）</h4><ul>
+<li><p>ajax其实只需要学习一个对象：XMLHttpRequest，如果掌握了它，就掌握了ajax！！！</p>
+</li>
+<li><p>得到XMLHttpRequest</p>
+<blockquote>
+<p>大多数浏览器都支持：var xmlHttp = new XMLHttpRequest();<br>IE6.0：var xmlHttp = new ActiveXObject(“Msxml2.XMLHTTP”);<br>IE5.5以更早版本的IE：var xmlHttp = new ActiveXObject(“Microsoft.XMLHTTP”);</p>
+</blockquote>
+</li>
+<li><p>编写创建XMLHttpRequest对象的函数</p>
+<pre><code>function createXMLHttpRequest() {
+  try {
+      return new XMLHttpRequest();
+  } catch(e) {
+      try {
+      return new ActiveXObject(&quot;Msxml2.XMLHTTP&quot;);
+  } catch(e) {
+      try {
+          return new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
+      } catch(e) {
+          alert(&quot;哥们儿，你用的是什么浏览器啊？&quot;);
+          throw e;
+      }
+  }
+  }
+}</code></pre></li>
+</ul>
+<h4 id="2-第二步（打开与服务器的连接）"><a href="#2-第二步（打开与服务器的连接）" class="headerlink" title="2. 第二步（打开与服务器的连接）"></a>2. 第二步（打开与服务器的连接）</h4><ul>
+<li>xmlHttp.open()：用来打开与服务器的连接，它需要三个参数：<blockquote>
+<p>请求方式：可以是GET或POST<br>请求的URL：指定服务器端资源，例如；/AServlet<br>请求是否为异步：如果为true表示发送异步请求，否则同步请求！</p>
+</blockquote>
+</li>
+<li>xmlHttp.open(“GET”, “/AServlet”, true);</li>
+</ul>
+<h4 id="3-第三步（发送请求）"><a href="#3-第三步（发送请求）" class="headerlink" title="3. 第三步（发送请求）"></a>3. 第三步（发送请求）</h4><ul>
+<li>xmlHttp.send(null)：如果不给可能会造成部份浏览器无法发送！<blockquote>
+<p>参数：就是请求体内容！如果是GET请求，必须给出null。</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="4-第四步（）"><a href="#4-第四步（）" class="headerlink" title="4. 第四步（）"></a>4. 第四步（）</h4><ul>
+<li><p>在xmlHttp对象的一个事件上注册监听器：onreadystatechange</p>
+</li>
+<li><p>xmlHttp对象一共有5个状态：</p>
+<blockquote>
+<p>0状态：刚创建，还没有调用open()方法;<br>1状态：请求开始：调用了open()方法，但还没有调用send()方法<br>2状态：调用完了send()方法了；<br>3状态：服务器已经开始响应，但不表示响应结束了！<br>4状态：服务器响应结束！（通常我们只关心这个状态！！！）</p>
+</blockquote>
+</li>
+<li><p>得到xmlHttp对象的状态：</p>
+<blockquote>
+<p>var state = xmlHttp.readyState;//可能是0、1、2、3、4</p>
+</blockquote>
+</li>
+<li><p>得到服务器响应的状态码</p>
+<blockquote>
+<p>var status = xmlHttp.status;//例如为200、404、500</p>
+</blockquote>
+</li>
+<li><p>得到服务器响应的内容1</p>
+<pre><code>&gt; var content = xmlHttp.responseText;//得到服务器的响应的文本格式的内容
+&gt; var content = xmlHttp.responseXML;//得到服务器的响应的xml响应的内容，它是Document对象了！
+
+xmlHttp.onreadystatechange = function() {//xmlHttp的5种状态都会调用本方法
+  if(xmlHttp.readyState == 4 &amp;&amp; xmlHttp.status == 200) {//双重判断：判断是否为4状态，而且还要判断是否为200
+      // 获取服务器的响应内容
+  var text = xmlHttp.responseText;
+  }
+};</code></pre></li>
+</ul>
+<h3 id="Demo1-ajax简单的请求jsp"><a href="#Demo1-ajax简单的请求jsp" class="headerlink" title="Demo1 ajax简单的请求jsp"></a>Demo1 ajax简单的请求jsp</h3><pre><code>### ajax.jsp
+
+&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;%@ taglib prefix=&quot;c&quot; uri=&quot;http://java.sun.com/jsp/jstl/core&quot; %&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Ajax&lt;/title&gt;
+&lt;/head&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+
+function createXMLHttpRequest(){
+    try{
+        return new XMLHttpRequest();
+    }catch (e) {
+        alert(&quot;垃圾浏览器&quot;);
+    }
+}
+window.onload = function () {
+    //点击button，ajax通过get方式获取数据
+  var btn = document.getElementById(&quot;btnGet&quot;);
+  btn.onclick = function () {
+      var xmlHttp = createXMLHttpRequest();
+      xmlHttp.open(&quot;GET&quot;,&quot;&lt;c:url value=&quot;/AjaxServlet&quot;/&gt;&quot;,true);
+      xmlHttp.send(null);
+      xmlHttp.onreadystatechange = function(){
+          if(xmlHttp.readyState == 4 &amp;&amp; xmlHttp.status == 200){
+             var text =  xmlHttp.responseText;
+             var od = document.getElementById(&quot;showGet&quot;);
+             od.innerHTML =text;
+          }
+      }
+  };
+
+  //点击button，ajax通过post方式获取数据
+  var postbtn = document.getElementById(&quot;btnPost&quot;);
+  postbtn.onclick = function () {
+      var xmlHttp = createXMLHttpRequest();
+      xmlHttp.open(&quot;POST&quot;,&quot;&lt;c:url value=&quot;/AjaxServlet&quot;/&gt;&quot;,true);
+      xmlHttp.setRequestHeader(&quot;Content-Type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+      xmlHttp.send(&quot;username=张三&amp;password=1234&quot;);
+      xmlHttp.onreadystatechange = function(){
+          if(xmlHttp.readyState == 4 &amp;&amp; xmlHttp.status == 200){
+              var text =  xmlHttp.responseText;
+              var od = document.getElementById(&quot;showpost&quot;);
+              od.innerHTML =text;
+          }
+      }
+  }
+//输入信息离开input后，ajax通过post方式获取数据
+    var username = document.getElementById(&quot;username&quot;);
+    username.onblur = function () {
+        var xmlHttp = createXMLHttpRequest();
+        xmlHttp.open(&quot;POST&quot;,&quot;&lt;c:url value=&quot;/AjaxServlet&quot;/&gt;&quot;,true);
+        xmlHttp.setRequestHeader(&quot;Content-Type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+        xmlHttp.send(&quot;username=&quot;+username.value+&quot;&amp;password=1234&quot;);
+        xmlHttp.onreadystatechange = function(){
+            if(xmlHttp.readyState == 4 &amp;&amp; xmlHttp.status == 200){
+                var text =  xmlHttp.responseText;
+                var od = document.getElementById(&quot;errormsg&quot;);
+                od.innerHTML =text;
+            }
+        }
+    }
+
+};
+
+&lt;/script&gt;
+&lt;body&gt;
+&lt;button id=&quot;btnGet&quot; value=&quot;button&quot;&gt;ajaxGET&lt;/button&gt;
+&lt;h2 id=&quot;showGet&quot; &gt;&lt;/h2&gt;
+&lt;button id=&quot;btnPost&quot;&gt;ajaxPost&lt;/button&gt;
+&lt;h2 id=&quot;showpost&quot;&gt;&lt;/h2&gt;
+username:&lt;input type=&quot;text&quot; id=&quot;username&quot;&gt;&lt;span id=&quot;errormsg&quot;&gt;&lt;/span&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+
+</code></pre><pre><code>## AjaxServlet.java
+
+package com.ajax.now;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet(name = &quot;AjaxServlet&quot;)
+public class AjaxServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println(&quot;post&quot;);
+        String username = request.getParameter(&quot;username&quot;);
+        String password = request.getParameter(&quot;password&quot;);
+        if (username.contains(&quot;admin&quot;)){
+            response.getWriter().print(&quot;用户名包含admin&quot;+username+password);
+        }else {
+            response.getWriter().print(&quot;用户名不包含admin&quot;+username+password);
+        }
+
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println(&quot;来时come去是go&quot;);
+        response.getWriter().print(&quot;hello world&quot;);
+    }
+}
+
+</code></pre><h3 id="Demo2-省市联动"><a href="#Demo2-省市联动" class="headerlink" title="Demo2 省市联动"></a>Demo2 省市联动</h3><ul>
+<li>ProvinceAjax.jsp   负责在页面加载时发送ajax请求，获取省份的数据，增加到省份的select标签下，当用户选择省份后，触发onchanage事件，发送ajax请求获取该省份的城市数据，增加到城市的select标签下</li>
+<li>ProvinceServlet.java<br>负责接收ajax的get请求返回所有省份的数据</li>
+<li>CityServlet.java<br>负责接收ajax的post请求，根据传来数据返回响应的城市数据</li>
+<li>pro.xml<br>负责存储省市联动的xml数据</li>
+</ul>
+<pre><code>## ProvinceAjax.jsp   
+
+&lt;%@ taglib prefix=&quot;c&quot; uri=&quot;http://java.sun.com/jsp/jstl/core&quot; %&gt;
+
+&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;html&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+    function createXMLHttpRequest(){
+        try{
+            return new XMLHttpRequest();
+        }catch (e) {
+            alert(&quot;垃圾浏览器&quot;);
+        }
+    }
+    window.onload = function () {
+
+        var xmlHttp = createXMLHttpRequest();
+        xmlHttp.open(&quot;GET&quot;,&quot;&lt;c:url value=&quot;/ProvinceServlet&quot;/&gt;&quot;,true);
+        xmlHttp.send(null);
+        xmlHttp.onreadystatechange = function(){
+            if(xmlHttp.readyState == 4 &amp;&amp; xmlHttp.status == 200){
+                var text =  xmlHttp.responseText;
+                var provincelist = text.split(&quot;,&quot;);
+                var pro = document.getElementById(&quot;province&quot;);
+                for(i=0;i&lt;provincelist.length;i++) {
+                    var op = document.createElement(&quot;option&quot;);
+                    op.value = provincelist[i];
+                    var textNode = document.createTextNode(provincelist[i]);
+                    op.appendChild(textNode);
+                    pro.appendChild(op);
+                }
+        }
+    };
+
+        var provincebtn = document.getElementById(&quot;province&quot;);
+        provincebtn.onchange = function () {
+            var xmlHttp = createXMLHttpRequest();
+            xmlHttp.open(&quot;POST&quot;,&quot;&lt;c:url value=&quot;/CityServlet&quot;/&gt;&quot;,true);
+            xmlHttp.setRequestHeader(&quot;Content-Type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+            xmlHttp.send(&quot;province=&quot;+provincebtn.value);
+            xmlHttp.onreadystatechange = function(){
+                if(xmlHttp.readyState == 4 &amp;&amp; xmlHttp.status == 200){
+                    var cityselect = document.getElementById(&quot;city&quot;);
+                    var optionElement = cityselect.getElementsByTagName(&quot;option&quot;);
+                    while (optionElement.length &gt;1){
+                        cityselect.removeChild(optionElement[1]);
+                    }
+                    var doc =  xmlHttp.responseXML;
+                    var cityList = doc.getElementsByTagName(&quot;city&quot;);
+                    for(var i=0;i&lt;cityList.length;i++){
+                        var cityele = cityList[i];
+                        cityName = cityele.textContent;
+                        var op = document.createElement(&quot;option&quot;);
+                        op.value = cityName;
+                        var textNode = document.createTextNode(cityName);
+                        op.appendChild(textNode);
+
+                        cityselect.appendChild(op);
+                    }
+                }
+            }
+        }
+    }
+
+&lt;/script&gt;
+&lt;head&gt;
+    &lt;title&gt;Province&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;select id=&quot;province&quot; &gt;
+    &lt;option &gt;请选择省份&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;select id=&quot;city&quot;&gt;
+    &lt;option &gt;请选择城市&lt;/option&gt;
+&lt;/select&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+</code></pre><pre><code>## ProvinceServlet.java
+
+package com.ajax.now;
+
+import org.dom4j.*;
+import org.dom4j.io.SAXReader;
+
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+
+@WebServlet(name = &quot;ProvinceServlet&quot;)
+public class ProvinceServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding(&quot;GBK&quot;);
+        response.setContentType(&quot;text/html;charset=GBK&quot;);
+        SAXReader reader = new SAXReader();
+        Document document = null;
+        try {
+            InputStream input = this.getClass().getResourceAsStream(&quot;/pro.xml&quot;);
+            document = reader.read(input);
+            Element root = document.getRootElement();
+            List&lt;Node&gt; arrList = root.selectNodes(&quot;//province//@name&quot;);
+            StringBuilder sb = new StringBuilder();
+
+            for (int i=0;i&lt; arrList.size();i++
+            ) {
+                sb.append(arrList.get(i).getStringValue());
+                if (i &lt; arrList.size()-1){
+                    sb.append(&quot;,&quot;);
+                }
+            }
+            response.getWriter().print(sb);
+        } catch (DocumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+
+    }
+}
+
+</code></pre><pre><code>## CityServlet.java
+
+package com.ajax.now;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+@WebServlet(name = &quot;CityServlet&quot;)
+public class CityServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        /*
+         * 获取省份名称
+         * 使用省份名称得到对应的province元素
+         * 把元素转换成字符串发送
+         * */
+        request.setCharacterEncoding(&quot;utf-8&quot;);
+        response.setContentType(&quot;text/xml;charset=utf-8&quot;);
+        String province = request.getParameter(&quot;province&quot;);
+        SAXReader reader = new SAXReader();
+        Document document = null;
+
+        try {
+            InputStream input = this.getClass().getResourceAsStream(&quot;/pro.xml&quot;);
+            document = reader.read(input);
+            Element root = document.getRootElement();
+            Node node = root.selectSingleNode(&quot;//province[@name=&#39;&quot; + province + &quot;&#39;]&quot;);
+            String xmlStr = node.asXML();
+            response.getWriter().print(xmlStr);
+        } catch (DocumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
+
+</code></pre><pre><code>## pro.xml
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;country&gt;
+    &lt;province name=&quot;北京&quot;&gt;
+        &lt;city&gt;海淀&lt;/city&gt;
+        &lt;city&gt;昌平&lt;/city&gt;
+        &lt;city&gt;朝阳&lt;/city&gt;
+    &lt;/province&gt;
+    &lt;province name=&quot;辽宁&quot;&gt;
+        &lt;city&gt;沈阳&lt;/city&gt;
+        &lt;city&gt;锦州&lt;/city&gt;
+        &lt;city&gt;大连&lt;/city&gt;
+    &lt;/province&gt;
+    &lt;province name=&quot;河北&quot;&gt;
+        &lt;city&gt;保定&lt;/city&gt;
+        &lt;city&gt;石家庄&lt;/city&gt;
+        &lt;city&gt;廊坊&lt;/city&gt;
+    &lt;/province&gt;
+&lt;/country&gt;
+</code></pre>
+            <hr>
+          </div>
+          <br>
+          <div>
+            
+            <p>
+              <i class="iconfont icon-tag"></i>
+              
+                <a class="hover-with-bg" href="/tags/java">java</a>
+              
+                <a class="hover-with-bg" href="/tags/javaweb">javaweb</a>
+              
+            </p>
+            
+              <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" rel="nofollow noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-none d-lg-block col-lg-2 toc-container">
+      
+  <div id="toc">
+    <p class="h4"><i class="far fa-list-alt"></i>&nbsp;TOC</p>
+    <div id="tocbot"></div>
+  </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- custom -->
+
+
+<!-- Comments -->
+<div class="col-lg-7 mx-auto nopadding-md">
+  <div class="container comments mx-auto" id="comments">
+    
+  </div>
+</div>
+
+    
+  </main>
+
+  
+    <a class="z-depth-1" id="scroll-top-button" href="#" role="button">
+      <i class="fa fa-chevron-up scroll-top-arrow" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"> <b>Fluid</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="/lib/jquery/jquery.min.js" ></script>
+<script src="/lib/popper/popper.min.js" ></script>
+<script src="/lib/bootstrap/js/bootstrap.min.js" ></script>
+<script src="/lib/mdbootstrap/js/mdb.min.js" ></script>
+<script src="/js/main.js" ></script>
+
+  <script src="/js/lazyload.js" ></script>
+
+
+  
+    <script src="/lib/tocbot/tocbot.min.js" ></script>
+  
+  <script src="/js/post.js" ></script>
+
+
+  <script src="/lib/prettify/prettify.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      $('pre').addClass('prettyprint linenums');
+      prettyPrint();
+    })
+  </script>
+
+
+  <script src="/lib/typed/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "ajax使用及数据转换&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+  <script src="/lib/anchor/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "false",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      getSearchFile(path);
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script>
+    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent) || (/Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent))) {
+      $("#background").css("background-attachment", "scroll");
+    }
+  </script>
+
+</body>
+</html>

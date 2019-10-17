@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="">
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content>
+  <meta name="author" content="liuliangliang">
+  <meta name="keywords" content>
+  <title>ssh 隧道及代理转发 ~ Git-liuliang</title>
+  <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css">
+  <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+  <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_qzomjdt8bmp.css">
+  
+    <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+  
+  <link rel="stylesheet" href="/css/main.css">
+
+  
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Git-liuliang</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">Archives</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">Categories</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">Tags</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">About</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+</nav>
+
+    <div class="view intro-2" id="background"
+         style="background: url('/img/default.png')no-repeat center center;
+           background-size: cover;
+           background-attachment: fixed;">
+      <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              <br>
+              <p class="mt-3">Friday, December 1st 2017, 8:10 pm</p>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="py-5 z-depth-3" id="board">
+        <div class="post-content mx-auto">
+          <div class="markdown-body">
+            <h1 id="ssh-tunnel"><a href="#ssh-tunnel" class="headerlink" title="ssh tunnel"></a>ssh tunnel</h1><h3 id="VPN-vs-SSH"><a href="#VPN-vs-SSH" class="headerlink" title="VPN vs SSH"></a>VPN vs SSH</h3><p>VPN和SSH隧道翻墙有如下区别：</p>
+<p>VPN的设置是全局的，即电脑一旦挂上VPN，所有的联网程序都将自动使用VPN；而建立好SSH隧道后，需要程序设定使用隧道才会使用隧道联网<br>如果使用商用的VPN一般要花钱，如果自己搭，VPN的搭建难度大于SSH隧道。因为SSH隧道只要一台可以SSH的服务器即可，根本不需要在服务器上配置任何东西</p>
+<h3 id="ssh动态绑定"><a href="#ssh动态绑定" class="headerlink" title="ssh动态绑定"></a>ssh动态绑定</h3><p>首先，墙内的客户机跟墙外的代理服务器，建立好SSH连接，并设定动态绑定<br>此时墙内客户机上的SSH会监听本地的一个端口7001<br>客户机上的程序，将对<a href="http://www.youtube.com:80的请求告知7001端口的SSH，SSH将此请求通过SSH加密连接发送到墙外服务器的SSH上" target="_blank" rel="noopener">www.youtube.com:80的请求告知7001端口的SSH，SSH将此请求通过SSH加密连接发送到墙外服务器的SSH上</a><br>由于建立的动态绑定，服务器会将<a href="http://www.youtube.com:80的请求发送给www.youtube.com上的80端口，并在收到回复后，通过原路返回给客户机的SSH，客户机的SSH返回给应用程序" target="_blank" rel="noopener">www.youtube.com:80的请求发送给www.youtube.com上的80端口，并在收到回复后，通过原路返回给客户机的SSH，客户机的SSH返回给应用程序</a></p>
+<h3 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h3><p>1.在本地执行</p>
+<pre><code> ssh -fND localhost:8888 root@remote_ip # 透過 ssh 建立一個 socks5 通過代理上網</code></pre><p>2.配置fiewfox</p>
+<pre><code>firefox -&gt; ... -&gt; 手動設定 proxy 將 socks 主機 設成 localhost, port 設定成 8888</code></pre><p>3.验证</p>
+<p>使用firefox，访问whatisip，查看现在的ip已经是remote_ip，就说明已经成功</p>
+<p>$ man ssh</p>
+<ul>
+<li><p>-N 不執行任何指令 (只連接主機　不打開 shell)</p>
+</li>
+<li><p>-f 在背景執行</p>
+</li>
+<li><p>-D 建 socks5 的 proxy</p>
+</li>
+</ul>
+<h1 id="ssh-代理转发"><a href="#ssh-代理转发" class="headerlink" title="ssh 代理转发"></a>ssh 代理转发</h1><p>Ssh-agent 可以帮助ssh转发秘钥，实现代理转发，将所有key配置在本地机器，即可实现线上主机之间的无密码登陆操作。</p>
+<p>原理：<br>    目标机器：A<br>    目标机器：B<br>    本地机器：C<br>    本地代理：D</p>
+<pre><code>在本地C上配置目标机器A和B的key，实现本地机器可以免密访问A，B，现在需要在A上执行ansible命令，免密操作B，正常情况需要在A上面配置访问B的key，然后实现免密操作，现在为了避免在A上存储key，使用ssh-agent代理，即D。使得C向B询问key时，通过代理D进行验证，只需要本地配置有key即可。</code></pre><p>配置：<br>    本地C：<br>        打开文件~/.ssh/config</p>
+<pre><code>Host A
+HostName 34.196.105.41
+IdentityFile ~/.ssh/A.pem
+User ubuntu
+ForwardAgent yes
+
+Host B
+HostName 34.196.105.41
+IdentityFile ~/.ssh/B.pem
+User ubuntu
+ForwardAgent yes</code></pre><p>使用ssh-add -K A.pem<br>       Ssh-add -K B.pem<br>添加操作服务器的秘钥到代理</p>
+<pre><code>确保sshd_config: 
+代理转发也可能在您的服务器上被阻止。您可以检查代理转发是否允许通过SSH进入服务器并正在运行sshd_config。此命令的输出应指示AllowAgentForwarding已设置。</code></pre>
+            <hr>
+          </div>
+          <br>
+          <div>
+            
+            <p>
+              <i class="iconfont icon-tag"></i>
+              
+                <a class="hover-with-bg" href="/tags/devops">devops</a>
+              
+            </p>
+            
+              <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" rel="nofollow noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-none d-lg-block col-lg-2 toc-container">
+      
+  <div id="toc">
+    <p class="h4"><i class="far fa-list-alt"></i>&nbsp;TOC</p>
+    <div id="tocbot"></div>
+  </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- custom -->
+
+
+<!-- Comments -->
+<div class="col-lg-7 mx-auto nopadding-md">
+  <div class="container comments mx-auto" id="comments">
+    
+  </div>
+</div>
+
+    
+  </main>
+
+  
+    <a class="z-depth-1" id="scroll-top-button" href="#" role="button">
+      <i class="fa fa-chevron-up scroll-top-arrow" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"> <b>Fluid</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="/lib/jquery/jquery.min.js" ></script>
+<script src="/lib/popper/popper.min.js" ></script>
+<script src="/lib/bootstrap/js/bootstrap.min.js" ></script>
+<script src="/lib/mdbootstrap/js/mdb.min.js" ></script>
+<script src="/js/main.js" ></script>
+
+  <script src="/js/lazyload.js" ></script>
+
+
+  
+    <script src="/lib/tocbot/tocbot.min.js" ></script>
+  
+  <script src="/js/post.js" ></script>
+
+
+  <script src="/lib/prettify/prettify.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      $('pre').addClass('prettyprint linenums');
+      prettyPrint();
+    })
+  </script>
+
+
+  <script src="/lib/typed/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "ssh 隧道及代理转发&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+  <script src="/lib/anchor/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "false",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      getSearchFile(path);
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script>
+    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent) || (/Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent))) {
+      $("#background").css("background-attachment", "scroll");
+    }
+  </script>
+
+</body>
+</html>

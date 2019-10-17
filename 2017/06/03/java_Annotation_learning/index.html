@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="">
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content>
+  <meta name="author" content="liuliangliang">
+  <meta name="keywords" content>
+  <title>java之注解使用案例解析 ~ Git-liuliang</title>
+  <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css">
+  <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+  <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_qzomjdt8bmp.css">
+  
+    <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+  
+  <link rel="stylesheet" href="/css/main.css">
+
+  
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Git-liuliang</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">Archives</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">Categories</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">Tags</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">About</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+</nav>
+
+    <div class="view intro-2" id="background"
+         style="background: url('/img/default.png')no-repeat center center;
+           background-size: cover;
+           background-attachment: fixed;">
+      <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              <br>
+              <p class="mt-3">Saturday, June 3rd 2017, 7:40 pm</p>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="py-5 z-depth-3" id="board">
+        <div class="post-content mx-auto">
+          <div class="markdown-body">
+            <h2 id="java之注解使用案例解析"><a href="#java之注解使用案例解析" class="headerlink" title="java之注解使用案例解析"></a>java之注解使用案例解析</h2><h4 id="啥是注解"><a href="#啥是注解" class="headerlink" title="啥是注解"></a>啥是注解</h4><p>注解也叫元数据，例如我们常见的@Override和@Deprecated，注解是JDK1.5版本开始引入的一个特性，用于对代码进行说明，可以对包、类、接口、字段、方法参数、局部变量等进行注解</p>
+<p>一般常用的注解可以分为三类：</p>
+<ul>
+<li><p>一类是Java自带的标准注解，包括@Override（标明重写某个方法）、@Deprecated（标明某个类或方法过时）和@SuppressWarnings（标明要忽略的警告），使用这些注解后编译器就会进行检查</p>
+</li>
+<li><p>一类为元注解，元注解是用于定义注解的注解，包括@Retention（标明注解被保留的阶段）、@Target（标明注解使用的范围）、@Inherited（标明注解可继承）、@Documented（标明是否生成javadoc文档）</p>
+</li>
+<li><p>一类为自定义注解，可以根据自己的需求定义注解</p>
+</li>
+</ul>
+<h4 id="注解用途"><a href="#注解用途" class="headerlink" title="注解用途"></a>注解用途</h4><ol>
+<li><p>生成文档，通过代码里标识的元数据生成javadoc文档。</p>
+</li>
+<li><p>编译检查，通过代码里标识的元数据让编译器在编译期间进行检查验证。</p>
+</li>
+<li><p>编译时动态处理，编译时通过代码里标识的元数据动态处理，例如动态生成代码。</p>
+</li>
+<li><p>运行时动态处理，运行时通过代码里标识的元数据动态处理，例如使用反射注入实例</p>
+</li>
+</ol>
+<h4 id="使用注解案例"><a href="#使用注解案例" class="headerlink" title="使用注解案例"></a>使用注解案例</h4><p>使用注解将dao层原本需要为每个table写的add（）方法合并成为一个。</p>
+<p>未使用注解前：</p>
+<p>代码片段结构  </p>
+<ul>
+<li>Dao<ul>
+<li>UserDao.java</li>
+<li>categoryDao.java</li>
+</ul>
+</li>
+<li>Entity<ul>
+<li>User.java</li>
+<li>Category.java</li>
+</ul>
+</li>
+</ul>
+<pre><code>userDao.java
+
+public void add(User user){
+
+        try{
+            String sql = &quot;insert into tb_user value(?,?,?,?,?,?)&quot;;
+            Object[] params = {user.getUid(),user.getUsername(),user.getPassword(),user.getEmail(),user.getCode(),user.getState()};
+            qr.update(sql,params);
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+categoryDao.java
+
+ public String add(Category category){
+        try{
+            String cid = category.getCid();
+            String cname = category.getCname();
+            String sql = &quot;insert into category values(?,?)&quot;;
+            Object[] params = {cid,cname};
+            qr.update(sql,params);
+            return &quot;添加成功&quot;;
+        }catch (Exception e){
+            return &quot;添加失败&quot;;
+        }
+
+    }
+</code></pre><p>使用注解后：</p>
+<p>代码片段结构  </p>
+<ul>
+<li>Dao<ul>
+<li>UserDao.java</li>
+<li>categoryDao.java</li>
+<li>BaseDao.java</li>
+</ul>
+</li>
+<li>Entity<ul>
+<li>UserTest.java</li>
+<li>CategoryTest.java</li>
+</ul>
+</li>
+<li>Annotation<ul>
+<li>GetMe.java</li>
+<li>Column.java</li>
+<li>ID.java</li>
+</ul>
+</li>
+</ul>
+<pre><code>UserDao.java
+
+public class TestDao extends BaseDao&lt;UserTest&gt; {
+
+    public void useradd(UserTest user) throws SQLException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        super.add(user);
+    }
+
+categoryDao.java
+
+public class TestDao2 extends BaseDao&lt;CategoryTest&gt; {
+    public void categoryadd(CategoryTest category) throws SQLException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        super.add(category);
+    }
+
+
+BaseDao.java
+
+
+public class BaseDao&lt;T&gt; {
+
+    private QueryRunner qr = new TxQueryRunner();
+
+    public void add(T bean) throws SQLException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+
+        //获取子类传来的对象，并获取该对象的类
+        Class c = bean.getClass();
+
+
+        //获取该类下自己定义的所有类属性，通过反射得到注解的值
+        Field[] fields = c.getDeclaredFields();
+        for(Field field:fields){
+            if(&quot;uid&quot;.equals(field.getName()) || &quot;cid&quot;.equals(field.getName())){
+                ID id = field.getDeclaredAnnotation(ID.class);
+                System.out.println(id.value());
+
+            }else {
+                Column filedLearn = field.getDeclaredAnnotation(Column.class);
+                System.out.println(filedLearn.value());
+            }
+
+        }
+
+        //获取该类下自己定义的所有方法，通过反射得到注解的值，写入有序的map中
+        Map&lt;String,Object&gt; map = new LinkedHashMap&lt;String,Object&gt;();
+        Method[] medthods = c.getDeclaredMethods();
+        for (Method method:medthods
+             ) {
+            if(method.getName().startsWith(&quot;get&quot;)){
+                System.out.println(method.getName());
+                GetMe getme = method.getDeclaredAnnotation(GetMe.class);
+                System.out.println(getme);
+                map.put(getme.param(),method.invoke(bean));
+            }
+        }
+
+        //通过反射获取该类的注解，注解的值设置为类所对应的数据库table名称
+        Table mytabl = (Table) c.getAnnotation(Table.class);
+        System.out.println(mytabl.value());
+        String pa = &quot;?,&quot; ;
+        for (int i = 1; i &lt; fields.length; i++) {
+            pa += &quot;?&quot;;
+            if(i&lt;fields.length-1){
+                pa +=&quot;,&quot;;
+            }
+        }
+
+        //动态构建sql和params，执行qr.update
+        StringBuffer buf=new StringBuffer();
+        buf.append(&quot;insert into &quot;);
+        buf.append(mytabl.value());
+        buf.append(&quot;(&quot;);
+        String sqlkey = String.join(&quot;,&quot;,map.keySet());
+        buf.append(sqlkey);
+        buf.append(&quot;) &quot;);
+        buf.append(&quot; values(&quot;);
+        buf.append(pa);
+        buf.append(&quot;)&quot;);
+        String sql=buf.toString();
+        System.out.println(sql);
+        Object[] params = map.values().toArray();
+        System.out.println(params);
+        qr.update(sql,params);
+
+
+    }
+}
+</code></pre><pre><code>CategoryTest.java
+
+package com.facesun.test;
+@Table(&quot;category&quot;)
+public class CategoryTest {
+
+        @ID(&quot;cid&quot;)
+        private String cid;
+        @Column(&quot;cname&quot;)
+        private String cname;
+
+       @GetMe(param=&quot;cid&quot;)
+        public String getCid() {
+        return cid;
+    }
+
+        public void setCid(String cid) {
+        this.cid = cid;
+    }
+    @GetMe(param=&quot;cname&quot;)
+        public String getCname() {
+        return cname;
+    }
+
+        public void setCname(String cname) {
+        this.cname = cname;
+    }
+}
+</code></pre><pre><code>UserTest.java
+
+package com.facesun.test;
+@Table(&quot;tb_user&quot;)
+public class UserTest {
+    @ID(&quot;uid&quot;)
+    private String uid;
+    @Column(&quot;username&quot;)
+    private String username;
+    @Column(&quot;password&quot;)
+    private String password;
+    @Column(&quot;email&quot;)
+    private String email;
+    @Column(&quot;code&quot;)
+    private String code;
+    @Column(&quot;state&quot;)
+    private Boolean state;
+    @GetMe(param=&quot;uid&quot;)
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+    @GetMe(param=&quot;username&quot;)
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    @GetMe(param=&quot;password&quot;)
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    @GetMe(param=&quot;email&quot;)
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    @GetMe(param = &quot;code&quot;)
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+    @GetMe(param = &quot;state&quot;)
+    public Boolean getState() {
+        return state;
+    }
+
+    public void setState(Boolean state) {
+        this.state = state;
+    }
+
+}
+
+</code></pre><pre><code>GetMe.java
+
+package com.facesun.test;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface GetMe {
+    String param();
+}
+
+
+Column.java
+
+package com.facesun.test;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Column {
+
+    String value();
+}
+
+ID.java
+
+package com.facesun.test;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ID {
+    String value();
+}
+
+</code></pre>
+            <hr>
+          </div>
+          <br>
+          <div>
+            
+            <p>
+              <i class="iconfont icon-tag"></i>
+              
+                <a class="hover-with-bg" href="/tags/java">java</a>
+              
+                <a class="hover-with-bg" href="/tags/javaweb">javaweb</a>
+              
+            </p>
+            
+              <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" rel="nofollow noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-none d-lg-block col-lg-2 toc-container">
+      
+  <div id="toc">
+    <p class="h4"><i class="far fa-list-alt"></i>&nbsp;TOC</p>
+    <div id="tocbot"></div>
+  </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- custom -->
+
+
+<!-- Comments -->
+<div class="col-lg-7 mx-auto nopadding-md">
+  <div class="container comments mx-auto" id="comments">
+    
+  </div>
+</div>
+
+    
+  </main>
+
+  
+    <a class="z-depth-1" id="scroll-top-button" href="#" role="button">
+      <i class="fa fa-chevron-up scroll-top-arrow" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"> <b>Fluid</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="/lib/jquery/jquery.min.js" ></script>
+<script src="/lib/popper/popper.min.js" ></script>
+<script src="/lib/bootstrap/js/bootstrap.min.js" ></script>
+<script src="/lib/mdbootstrap/js/mdb.min.js" ></script>
+<script src="/js/main.js" ></script>
+
+  <script src="/js/lazyload.js" ></script>
+
+
+  
+    <script src="/lib/tocbot/tocbot.min.js" ></script>
+  
+  <script src="/js/post.js" ></script>
+
+
+  <script src="/lib/prettify/prettify.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      $('pre').addClass('prettyprint linenums');
+      prettyPrint();
+    })
+  </script>
+
+
+  <script src="/lib/typed/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "java之注解使用案例解析&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+  <script src="/lib/anchor/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "false",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      getSearchFile(path);
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script>
+    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent) || (/Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent))) {
+      $("#background").css("background-attachment", "scroll");
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="">
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content>
+  <meta name="author" content="liuliangliang">
+  <meta name="keywords" content>
+  <title>java之mybaits分表shardbatis ~ Git-liuliang</title>
+  <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css">
+  <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+  <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_qzomjdt8bmp.css">
+  
+    <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+  
+  <link rel="stylesheet" href="/css/main.css">
+
+  
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Git-liuliang</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">Archives</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">Categories</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">Tags</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">About</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+</nav>
+
+    <div class="view intro-2"
+         style="background: url('/img/default.png')no-repeat center center;
+           background-size: cover;
+           background-attachment: fixed;">
+      <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              <br>
+              <p>Sunday, August 20th 2017, 9:42 am</p>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="py-5 z-depth-3" id="board">
+        <div class="post-content mx-auto">
+          <div class="markdown-body">
+            <h3 id="java之mybaits分表shardbatis"><a href="#java之mybaits分表shardbatis" class="headerlink" title="java之mybaits分表shardbatis"></a>java之mybaits分表shardbatis</h3><pre><code>Shardbatis的名称由shard(ing)+mybatis组合得到，诣在为mybatis实现数据水平切分的功能。数据的水平切分包括多数据库的切分和多表的数据切分，目前shardbatis只实现了单数据库的数据多表水平切分。Shardbatis2.0以插件的方式和mybatis3.x进行整合，对mybatis的代码无侵入，不改变用户对mybatis的使用习惯。</code></pre><h4 id="QuickStart"><a href="#QuickStart" class="headerlink" title="QuickStart"></a>QuickStart</h4><ul>
+<li><p>0.<a href="https://github.com/colddew/shardbatis" target="_blank" rel="noopener">https://github.com/colddew/shardbatis</a></p>
+</li>
+<li><p>1.导入依赖包</p>
+<ul>
+<li>lib/jsqlparser-0.7.2.jar</li>
+<li>lib/shardbatis-2.1.0.jar</li>
+</ul>
+</li>
+<li><p>2.在应用的classpath中添加sharding配置文件shard_config.xml</p>
+</li>
+</ul>
+<pre><code>    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE shardingConfig PUBLIC &quot;-//shardbatis.googlecode.com//DTD Shardbatis 2.0//EN&quot;
+        &quot;http://shardbatis.googlecode.com/dtd/shardbatis-config.dtd&quot;&gt;
+&lt;shardingConfig&gt;
+    &lt;!--
+        parseList可选配置
+        如果配置了parseList,只有在parseList范围内并且不再ignoreList内的sql才会被解析和修改
+    --&gt;
+    &lt;ignoreList&gt;
+        &lt;value&gt;xxx.xxx&lt;/value&gt;
+    &lt;/ignoreList&gt;
+    &lt;parseList&gt;
+        &lt;value&gt;com.database.mapper.UserMapper.findUserById&lt;/value&gt;
+        &lt;value&gt;com.database.mapper.UserMapper.insertUser&lt;/value&gt;
+        &lt;value&gt;com.database.mapper.UserMapper.deleteUser&lt;/value&gt;
+        &lt;value&gt;com.database.mapper.OrdersMapperCustom.findOrderUser&lt;/value&gt;
+        &lt;value&gt;com.database.mapper.OrdersMapperCustom.findOrderUserResultMap&lt;/value&gt;
+        &lt;value&gt;com.database.mapper.OrdersMapperCustom.findUserAndItemsResultMap&lt;/value&gt;
+    &lt;/parseList&gt;
+    &lt;!--
+        配置分表策略
+        tableName指的是实际的表名，strategyClass对应的分表策略实现类
+    --&gt;
+    &lt;strategy tableName=&quot;user&quot; strategyClass=&quot;com.database.mapper.UserShardStrategyImpl&quot;/&gt;
+    &lt;strategy tableName=&quot;orders&quot; strategyClass=&quot;com.database.mapper.OrdersShardStrategyImpl&quot;/&gt;
+    &lt;strategy tableName=&quot;items&quot; strategyClass=&quot;com.database.mapper.ItemsShardStrategyImpl&quot;/&gt;
+&lt;/shardingConfig&gt;
+</code></pre><ul>
+<li><p>3.在mybatis配置文件中添加</p>
+<pre><code>&lt;plugins&gt;
+  &lt;plugin interceptor=&quot;com.google.code.shardbatis.plugin.ShardPlugin&quot;&gt;
+      &lt;property name=&quot;shardingConfig&quot; value=&quot;shard_config.xml&quot;/&gt;
+  &lt;/plugin&gt;
+&lt;/plugins&gt;</code></pre></li>
+<li><p>4.实现自定义sharding策略</p>
+</li>
+</ul>
+<pre><code>/**
+* 分表策略接口
+*/
+public interface ShardStrategy {
+    /**
+     * 得到实际表名
+     * @param baseTableName 逻辑表名,一般是没有前缀或者是后缀的表名
+     * @param params mybatis执行某个statement时使用的参数
+     * @param mapperId mybatis配置的statement id
+     * @return 实际表名
+     */
+    String getTargetTableName(String baseTableName,Object params,String mapperId);
+}
+
+public class XXXShardStrategy implements ShardStrategy {
+
+    @Override
+    public String getTargetTableName(String baseTableName, Object params, String mapperId) {
+        return baseTableName + getTableNameSuffix(params);
+    }
+
+    private String getTableNameSuffix(Object params) {
+        // 例如可以根据用户id求余或者hash获取表名后缀
+    }
+}
+</code></pre><ul>
+<li><p>5.使用<br>  通过以上配置已经完成了所有配置，因为shardbatis2.0使用插件方式对mybatis功能进行增强，代码无侵入，因此使用配置了shardbatis的mybatis3和使用原生的mybatis3没有区别</p>
+</li>
+<li><p>6.注意事项</p>
+<ol>
+<li>2.0版本中inser、update、delete语句中的子查询语句中的表不支持sharding  </li>
+<li>select语句中如果进行多表关联，请务必为每个表名加上别名，例如原始sql语句：SELECT a.* FROM ANTIQUES a, ANTIQUEOWNERS b, mytable c where a.id=b.id and b.id=c.id 经过转换后的结果可能为：SELECT a.* FROM ANTIQUES_0 AS a, ANTIQUEOWNERS_1 AS b, mytable_1 AS c WHERE a.id = b.id AND b.id = c.id  </li>
+</ol>
+</li>
+<li><p>7.源码简析</p>
+</li>
+</ul>
+<pre><code>
+package com.google.code.shardbatis.plugin;
+
+import com.google.code.shardbatis.builder.ShardConfigHolder;
+import com.google.code.shardbatis.builder.ShardConfigParser;
+import com.google.code.shardbatis.converter.SqlConverterFactory;
+import com.google.code.shardbatis.util.ReflectionUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
+import java.sql.Connection;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import org.apache.ibatis.executor.statement.RoutingStatementHandler;
+import org.apache.ibatis.executor.statement.StatementHandler;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.plugin.Interceptor;
+import org.apache.ibatis.plugin.Intercepts;
+import org.apache.ibatis.plugin.Invocation;
+import org.apache.ibatis.plugin.Plugin;
+import org.apache.ibatis.plugin.Signature;
+
+@Intercepts({@Signature(
+    type = StatementHandler.class,
+    method = &quot;prepare&quot;,
+    args = {Connection.class}
+)})
+public class ShardPlugin implements Interceptor {
+    private static final Log log = LogFactory.getLog(ShardPlugin.class);
+    public static final String SHARDING_CONFIG = &quot;shardingConfig&quot;;
+    private static final ConcurrentHashMap&lt;String, Boolean&gt; cache = new ConcurrentHashMap();
+
+    public ShardPlugin() {
+    }
+
+    public Object intercept(Invocation invocation) throws Throwable {
+        StatementHandler statementHandler = (StatementHandler)invocation.getTarget();
+        Plugin plugin;
+        if (Proxy.isProxyClass(statementHandler.getClass())) {
+            plugin = (Plugin)Proxy.getInvocationHandler(statementHandler);
+            if (plugin != null) {
+                Field targetField = plugin.getClass().getDeclaredField(&quot;target&quot;);
+                targetField.setAccessible(true);
+                statementHandler = (StatementHandler)targetField.get(plugin);
+            }
+        }
+        //通过反射得到statementid，获取statement的sql
+        plugin = null;
+        MappedStatement mappedStatement;
+        if (statementHandler instanceof RoutingStatementHandler) {
+            StatementHandler delegate = (StatementHandler)ReflectionUtils.getFieldValue(statementHandler, &quot;delegate&quot;);
+            mappedStatement = (MappedStatement)ReflectionUtils.getFieldValue(delegate, &quot;mappedStatement&quot;);
+        } else {
+            mappedStatement = (MappedStatement)ReflectionUtils.getFieldValue(statementHandler, &quot;mappedStatement&quot;);
+        }
+
+        String mapperId = mappedStatement.getId();
+        if (this.isShouldParse(mapperId)) {
+            String sql = statementHandler.getBoundSql().getSql();
+            if (log.isDebugEnabled()) {
+                log.debug(&quot;Original Sql [&quot; + mapperId + &quot;]:&quot; + sql);
+            }
+        //获取statement传递的参数，存到params中
+
+            Object params = statementHandler.getBoundSql().getParameterObject();
+        //调用SqlConverterFactory工厂类，执行convert方法，其中会执行我们刚才自定义的getTargetTableName方法
+            SqlConverterFactory cf = SqlConverterFactory.getInstance();
+            sql = cf.convert(sql, params, mapperId);
+            if (log.isDebugEnabled()) {
+                log.debug(&quot;Converted Sql [&quot; + mapperId + &quot;]:&quot; + sql);
+            }
+
+            ReflectionUtils.setFieldValue(statementHandler.getBoundSql(), &quot;sql&quot;, sql);
+        }
+
+        return invocation.proceed();
+    }
+
+    public Object plugin(Object target) {
+        return Plugin.wrap(target, this);
+    }
+
+    public void setProperties(Properties properties) {
+        String config = properties.getProperty(&quot;shardingConfig&quot;, (String)null);
+        if (config != null &amp;&amp; config.trim().length() != 0) {
+            ShardConfigParser parser = new ShardConfigParser();
+            InputStream input = null;
+
+            try {
+                input = Resources.getResourceAsStream(config);
+                parser.parse(input);
+            } catch (IOException var14) {
+                log.error(&quot;Get sharding config file failed.&quot;, var14);
+                throw new IllegalArgumentException(var14);
+            } catch (Exception var15) {
+                log.error(&quot;Parse sharding config file failed.&quot;, var15);
+                throw new IllegalArgumentException(var15);
+            } finally {
+                if (input != null) {
+                    try {
+                        input.close();
+                    } catch (IOException var13) {
+                        log.error(var13.getMessage(), var13);
+                    }
+                }
+
+            }
+
+        } else {
+            throw new IllegalArgumentException(&quot;property &#39;shardingConfig&#39; is requested.&quot;);
+        }
+    }
+
+    private boolean isShouldParse(String mapperId) {
+        Boolean parse = (Boolean)cache.get(mapperId);
+        if (parse != null) {
+            return parse;
+        } else {
+            if (!mapperId.endsWith(&quot;!selectKey&quot;)) {
+                ShardConfigHolder configHolder = ShardConfigHolder.getInstance();
+                if (!configHolder.isIgnoreId(mapperId) &amp;&amp; (!configHolder.isConfigParseId() || configHolder.isParseId(mapperId))) {
+                    parse = true;
+                }
+            }
+
+            if (parse == null) {
+                parse = false;
+            }
+
+            cache.put(mapperId, parse);
+            return parse;
+        }
+    }
+}
+
+
+
+</code></pre>
+            <hr>
+          </div>
+          <br>
+          <div>
+            
+            <p>
+              <i class="iconfont icon-tag"></i>
+              
+                <a class="hover-with-bg" href="/tags/java">java</a>
+              
+                <a class="hover-with-bg" href="/tags/database">database</a>
+              
+            </p>
+            
+              <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" rel="nofollow noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-none d-lg-block col-lg-2 toc-container">
+      
+  <div id="toc">
+    <p class="h4"><i class="far fa-list-alt"></i>&nbsp;TOC</p>
+    <div id="tocbot"></div>
+  </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- custom -->
+
+
+<!-- Comments -->
+<div class="col-lg-7 mx-auto nopadding-md">
+  <div class="container comments mx-auto" id="comments">
+    
+  </div>
+</div>
+
+    
+  </main>
+
+  
+    <a class="z-depth-1" id="scroll-top-button" href="#" role="button">
+      <i class="fa fa-chevron-up scroll-top-arrow" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"> <b>Fluid</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/popper/popper.min.js"></script>
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+<script src="/lib/mdbootstrap/js/mdb.min.js"></script>
+<script src="/js/main.js"></script>
+
+  
+    <script src="/lib/tocbot/tocbot.min.js"></script>
+  
+  <script src="/js/post.js"></script>
+
+
+  <script src="/lib/prettify/prettify.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('pre').addClass('prettyprint linenums');
+      prettyPrint();
+    })
+  </script>
+
+
+  <script src="/lib/typed/typed.min.js"></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "java之mybaits分表shardbatis&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+  <script src="/lib/anchor/anchor.min.js"></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "false",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script src="/js/local-search.js"></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      getSearchFile(path);
+      this.onclick = null
+    }
+  </script>
+
+
+</body>
+</html>

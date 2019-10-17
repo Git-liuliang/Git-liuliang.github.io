@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="">
+
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content>
+  <meta name="author" content="liuliangliang">
+  <meta name="keywords" content>
+  <title>Git-liuliang</title>
+  <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/lib/mdbootstrap/css/mdb.min.css">
+  <link rel="stylesheet" href="/lib/github-markdown/github-markdown.min.css">
+  <link rel="stylesheet" href="https://at.alicdn.com/t/font_1067060_qzomjdt8bmp.css">
+  
+    <link rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css">
+  
+  <link rel="stylesheet" href="/css/main.css">
+
+  
+</head>
+
+
+<body>
+  <header style="height: 100vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Git-liuliang</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">Archives</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">Categories</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">Tags</a>
+          </li>
+        
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">About</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+</nav>
+
+    <div class="view intro-2" id="background"
+         style="background: url('/img/default.png')no-repeat center center;
+           background-size: cover;
+           background-attachment: fixed;">
+      <div class="full-bg-img">
+        <div class="mask rgba-black-light flex-center">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+          </div>
+
+          
+            <div class="scroll-down-bar">
+              <i class="fa fa-angle-down scroll-down-arrow"></i>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      <div class="container nopadding-md">
+        <div class="py-5 z-depth-3" id="board">
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+
+  <div class="row mb-4 mx-auto">
+    
+    
+    <div class="col-12 col-md-8 m-auto">
+      <a href="/2018/10/19/java_HashMap_learning/">
+        <p class="h4 index-header">java之HashMap源码及扩容机制</p>
+        
+        
+          
+        
+        <div class="index-excerpt" >
+          <div class="index-text mb-1">HashMap源码及扩容机制概述Hashmap实际上是一个数组和链表的结合体（在数据结构中，一般称之为链表散列）。当新建一个hashmap的时候，就会初始化一个数组。
+当我们往hashmap中put元素的时候，先根据key的hash值得到这个元素在数组中的位置（即下标），然后就可以把这个元素放到对应的位置中了。如果这个元素所在的位子上已经存放有其他元素了，那么在同一个位子上的元素将以链表的形式存放，新加入的放在链头，最先加入的放在链尾。从hashmap中get元素时，首先计算key的hashcode，找到数组中对应位置的某一元素，然后通过key的equals方法在对应位置的链表中找到需要的元素。HashMap初始化HashMap的默认值必须规定时2的幂次，这样可以确保key算的index相同几率较小，查询效率较高。其中初始值为16，最大值为2的30次方，加载因子为0.75，还有与红黑树相关的三个参数。链表长度大于8时，转换为红黑树。在static方法中重写了equals和hashcode方法
+
+
+public class HashMap&lt;K,V&gt; extends Abstr</div>
+        </div>
+      </a>
+
+      <div>
+        
+          <i class="iconfont icon-riqi2"></i>&nbsp;2018-10-19&nbsp;&nbsp;
+        
+        
+        
+          <i class="iconfont icon-tag"></i>
+          
+            <a href="/tags/java">java</a>&nbsp;
+          
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4 mx-auto">
+    
+    
+    <div class="col-12 col-md-8 m-auto">
+      <a href="/2018/10/17/java_ArrayList_learning/">
+        <p class="h4 index-header">java之ArrayList与LinkedList比较</p>
+        
+        
+          
+        
+        <div class="index-excerpt" >
+          <div class="index-text mb-1">ArrayList与LinkedList比较概述ArrayList
+ArrayList的底层实现为数组存储在内存中，线程不同步。可通过数组下标的形式进行查找，所以在查询方面的效率较为出色，常用在查询较多的情景下。
+
+LinkedList
+LinkedList的底层实现为链表形式，也为线程不同步。而链表的底层也决定了它在查询方面不如数组底层的ArrayList而在指定位置插入等修改操作下，性能优于ArrayList。
+
+Vector
+另外还有Vector，Vector也是和ArrayList、LinkedList一样实现了java.util.List接口。最大的区别在于Vestor是线程同步的，所以在效率方面不如另外两者，适用于多线程项目中。LinkedList扩容由于它的底层是用双向链表实现的，没有初始化大小，也没有扩容的机制。每次add操作只需要将last的链表和新的添加连起来合成新的就可以了
+ public boolean add(E e) {
+        linkLast(e);
+        return true;
+    }
+
+  void linkLast(E e)</div>
+        </div>
+      </a>
+
+      <div>
+        
+          <i class="iconfont icon-riqi2"></i>&nbsp;2018-10-17&nbsp;&nbsp;
+        
+        
+        
+          <i class="iconfont icon-tag"></i>
+          
+            <a href="/tags/java">java</a>&nbsp;
+          
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4 mx-auto">
+    
+    
+    <div class="col-12 col-md-8 m-auto">
+      <a href="/2018/05/01/influxdb_granfa/">
+        <p class="h4 index-header">grafna influxdb 监控服务</p>
+        
+        
+          
+        
+        <div class="index-excerpt" >
+          <div class="index-text mb-1">python+influxdb+grafana监控系统Tips：    python收集数据，起udp client发送消息    python 起udp server接收数据，定时刷新通过graphite协议将数据发送到influxDB    grafana来展示influxDB的数据
+安装influxdbcurl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add -
+echo &quot;deb https://repos.influxdata.com/ubuntu trusty stable&quot; | sudo tee /etc/apt/sources.list.d/influxdb.list
+apt update
+apt install influxdb
+sudo service influxdb start
+
+配置influxdb详细配置参数信息参考官网https://docs.influxdata.com/influxdb/v1.7/administration/config/这里主要开启</div>
+        </div>
+      </a>
+
+      <div>
+        
+          <i class="iconfont icon-riqi2"></i>&nbsp;2018-05-01&nbsp;&nbsp;
+        
+        
+        
+          <i class="iconfont icon-tag"></i>
+          
+            <a href="/tags/python">python</a>&nbsp;
+          
+            <a href="/tags/devops">devops</a>&nbsp;
+          
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4 mx-auto">
+    
+    
+    <div class="col-12 col-md-8 m-auto">
+      <a href="/2018/02/01/statsclient_learning/">
+        <p class="h4 index-header">influxdb监控之statsclient端介绍</p>
+        
+        
+          
+        
+        <div class="index-excerpt" >
+          <div class="index-text mb-1">statsclientstatsclient 是 statsd 系统的客户端。关于 statsd 的介绍参考: 
+https://www.jianshu.com/p/f6f18cc268a4,
+stats(client + server) + influxdb + grafana, 其中 statsclient 和 statsserver
+是自己用python写的。statsclient 会把数据传给 statsserver,
+statsserver 通过汇总等处理将数据存储到 influxdb, grafana 从 influxdb 获取数据
+进行可视化展示并提供报警功能。这里我们只介绍 statsclient 的使用。快速开始建立实例
+from gogo.common.statsclient import StatsClient
+
+# 默认
+stats_client = StatsClient()
+# 指定主机名和端口
+stats_client = StatsClient(host=&#39;192.168.8.1&#39;, port=8125)
+# 指定前缀
+stats_cli</div>
+        </div>
+      </a>
+
+      <div>
+        
+          <i class="iconfont icon-riqi2"></i>&nbsp;2018-02-01&nbsp;&nbsp;
+        
+        
+        
+          <i class="iconfont icon-tag"></i>
+          
+            <a href="/tags/python">python</a>&nbsp;
+          
+            <a href="/tags/devops">devops</a>&nbsp;
+          
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4 mx-auto">
+    
+    
+    <div class="col-12 col-md-8 m-auto">
+      <a href="/2017/12/01/ssh_tunnel/">
+        <p class="h4 index-header">ssh 隧道及代理转发</p>
+        
+        
+          
+        
+        <div class="index-excerpt" >
+          <div class="index-text mb-1">ssh tunnelVPN vs SSHVPN和SSH隧道翻墙有如下区别：
+VPN的设置是全局的，即电脑一旦挂上VPN，所有的联网程序都将自动使用VPN；而建立好SSH隧道后，需要程序设定使用隧道才会使用隧道联网如果使用商用的VPN一般要花钱，如果自己搭，VPN的搭建难度大于SSH隧道。因为SSH隧道只要一台可以SSH的服务器即可，根本不需要在服务器上配置任何东西
+ssh动态绑定首先，墙内的客户机跟墙外的代理服务器，建立好SSH连接，并设定动态绑定此时墙内客户机上的SSH会监听本地的一个端口7001客户机上的程序，将对www.youtube.com:80的请求告知7001端口的SSH，SSH将此请求通过SSH加密连接发送到墙外服务器的SSH上由于建立的动态绑定，服务器会将www.youtube.com:80的请求发送给www.youtube.com上的80端口，并在收到回复后，通过原路返回给客户机的SSH，客户机的SSH返回给应用程序
+实操1.在本地执行
+ ssh -fND localhost:8888 root@remote_ip # 透過 ssh 建立一個 socks5 通過代理上</div>
+        </div>
+      </a>
+
+      <div>
+        
+          <i class="iconfont icon-riqi2"></i>&nbsp;2017-12-01&nbsp;&nbsp;
+        
+        
+        
+          <i class="iconfont icon-tag"></i>
+          
+            <a href="/tags/devops">devops</a>&nbsp;
+          
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4 mx-auto">
+    
+    
+    <div class="col-12 col-md-8 m-auto">
+      <a href="/2017/12/01/flask_source_request_context/">
+        <p class="h4 index-header">flask request 上下文源码解读</p>
+        
+        
+          
+        
+        <div class="index-excerpt" >
+          <div class="index-text mb-1">flask上下文涉及三个类，
+    1.存储东西的类 2.中介处理的类 3.真正处理的类1. app.run()
+2. run_simple(host, port, self, **options)
+3. def __call__(self, environ, start_response):
+        &quot;&quot;&quot;The WSGI server calls the Flask application object as the
+        WSGI application. This calls :meth:`wsgi_app` which can be
+        wrapped to applying middleware.&quot;&quot;&quot;
+        return self.wsgi_app(environ, start_response)
+4. def wsgi_app(self, environ, start_response):
+
+        ctx = self.request_context(envi</div>
+        </div>
+      </a>
+
+      <div>
+        
+          <i class="iconfont icon-riqi2"></i>&nbsp;2017-12-01&nbsp;&nbsp;
+        
+        
+        
+          <i class="iconfont icon-tag"></i>
+          
+            <a href="/tags/python">python</a>&nbsp;
+          
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4 mx-auto">
+    
+    
+    <div class="col-12 col-md-8 m-auto">
+      <a href="/2017/12/01/three_bitch/">
+        <p class="h4 index-header">cut awk sed 用法总结</p>
+        
+        
+          
+        
+        <div class="index-excerpt" >
+          <div class="index-text mb-1">awk sed cut grepcut learningcut以某种方式按照文件的行进行分割
+cut参数：
+
+-b 按照字节选取
+-c 按照字符选取
+-d 自定义分隔符，默认为制表符
+-f 与-d一起使用，指定显示的区域
+
+example：
+cat /etc/passwd | cut -b1-3 #取每行的第1-3字字节
+cat /etc/passwd | cut -b1-3,4-5,5-8 #获取每行的第1-3 4-5 5-8字节
+cat /etc/passwd | cut -d &quot;:&quot; -f 3 #以&quot;:&quot;分割取第三段
+cat /etc/passwd | cut -d &quot; &quot; -f 3 #以&quot; &quot;分割取第三段awk learningawk [options] [program] [file]
+
+awk -F &quot;:&quot; &#39;{print $1}&#39; file   #按照&quot;:&quot;将每行分割后，取每行的第一个字段，$0表示整行内容，$1表示1行，以此类推
+awk</div>
+        </div>
+      </a>
+
+      <div>
+        
+          <i class="iconfont icon-riqi2"></i>&nbsp;2017-12-01&nbsp;&nbsp;
+        
+        
+        
+          <i class="iconfont icon-tag"></i>
+          
+            <a href="/tags/devops">devops</a>&nbsp;
+          
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4 mx-auto">
+    
+    
+    <div class="col-12 col-md-8 m-auto">
+      <a href="/2017/10/02/java_jedis_learning/">
+        <p class="h4 index-header">java之jedis操作redis</p>
+        
+        
+          
+        
+        <div class="index-excerpt" >
+          <div class="index-text mb-1">java之jedis操作redis简介jedis客户端操作redis主要三种模式：单台模式、分片模式（ShardedJedis）、集群模式（BinaryJedisCluster） 
+ShardedJedis是通过一致性哈希来实现分布式缓存的，通过一定的策略把不同的key分配到不同的redis server上，达到横向扩展的目的。
+这里主要介绍使用ShardedJedisPool+ShardedJedis操作redis的方式操作redis数据demopackage com.redis.demo;
+
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.JedisShardInfo;
+import redis.clients.jedis.ShardedJedis;
+import redis.clients.jedis.ShardedJedisPool;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class demo {
+
+
+ </div>
+        </div>
+      </a>
+
+      <div>
+        
+          <i class="iconfont icon-riqi2"></i>&nbsp;2017-10-02&nbsp;&nbsp;
+        
+        
+        
+          <i class="iconfont icon-tag"></i>
+          
+            <a href="/tags/java">java</a>&nbsp;
+          
+            <a href="/tags/database">database</a>&nbsp;
+          
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4 mx-auto">
+    
+    
+    <div class="col-12 col-md-8 m-auto">
+      <a href="/2017/10/01/java_AOP_learning/">
+        <p class="h4 index-header">java之代理模式</p>
+        
+        
+          
+        
+        <div class="index-excerpt" >
+          <div class="index-text mb-1">java之代理模式
+
+静态代理  
+
+
+
+动态代理  
+
+
+
+spring aop思考  
+
+
+
+环境沉浸1. 现在我有两个服务，分别是朋友圈评论功能和朋友圈点赞功能，想要不改变原有代码的基础上，实现功能前登录以及功能后输出日志的需求
+2. 这是朋友圈评论的功能
+
+Comment接口类
+```
+package com.dynamoProxy;
+
+public interface Comment {
+    //添加评论的方法
+    void add(String msg,String user);
+    //删除评论方法
+    void delete(String msgId);
+}
+
+```
+Comment接口实现类
+```
+    package com.dynamoProxy;
+
+    public class CommentImpl implements Comment {
+
+        @Override
+        public void add(String msg, String user) {
+            System.out.printl</div>
+        </div>
+      </a>
+
+      <div>
+        
+          <i class="iconfont icon-riqi2"></i>&nbsp;2017-10-01&nbsp;&nbsp;
+        
+        
+        
+          <i class="iconfont icon-tag"></i>
+          
+            <a href="/tags/java">java</a>&nbsp;
+          
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4 mx-auto">
+    
+    
+    <div class="col-12 col-md-8 m-auto">
+      <a href="/2017/08/20/java_mybatis_shardbatis/">
+        <p class="h4 index-header">java之mybaits分表shardbatis</p>
+        
+        
+          
+        
+        <div class="index-excerpt" >
+          <div class="index-text mb-1">java之mybaits分表shardbatisShardbatis的名称由shard(ing)+mybatis组合得到，诣在为mybatis实现数据水平切分的功能。数据的水平切分包括多数据库的切分和多表的数据切分，目前shardbatis只实现了单数据库的数据多表水平切分。Shardbatis2.0以插件的方式和mybatis3.x进行整合，对mybatis的代码无侵入，不改变用户对mybatis的使用习惯。QuickStart
+0.https://github.com/colddew/shardbatis
+
+1.导入依赖包
+
+lib/jsqlparser-0.7.2.jar
+lib/shardbatis-2.1.0.jar
+
+
+2.在应用的classpath中添加sharding配置文件shard_config.xml
+
+
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE shardingConfig PUBLIC &quot;-//shardbatis.googlec</div>
+        </div>
+      </a>
+
+      <div>
+        
+          <i class="iconfont icon-riqi2"></i>&nbsp;2017-08-20&nbsp;&nbsp;
+        
+        
+        
+          <i class="iconfont icon-tag"></i>
+          
+            <a href="/tags/java">java</a>&nbsp;
+          
+            <a href="/tags/database">database</a>&nbsp;
+          
+        
+      </div>
+    </div>
+  </div>
+
+
+
+  <nav aria-label="index posts navigation">
+    <ul class="pagination pg-blue justify-content-center mt-5">
+      
+      
+        <li class="page-item">
+          <a class="page-link" href="/page/2/#board">Next</a>
+        </li>
+      
+    </ul>
+  </nav>
+
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+  </main>
+
+  
+    <a class="z-depth-1" id="scroll-top-button" href="#" role="button">
+      <i class="fa fa-chevron-up scroll-top-arrow" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><b>Hexo</b></a>
+    <i class="iconfont icon-love"></i>
+    <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"> <b>Fluid</b></a>
+    <br>
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="/lib/jquery/jquery.min.js" ></script>
+<script src="/lib/popper/popper.min.js" ></script>
+<script src="/lib/bootstrap/js/bootstrap.min.js" ></script>
+<script src="/lib/mdbootstrap/js/mdb.min.js" ></script>
+<script src="/js/main.js" ></script>
+
+  <script src="/js/lazyload.js" ></script>
+
+
+
+  <script src="/lib/prettify/prettify.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      $('pre').addClass('prettyprint linenums');
+      prettyPrint();
+    })
+  </script>
+
+
+  <script src="/lib/typed/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "生活明朗 万物可爱 人生值得 未来可期&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+  <script src="/lib/anchor/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "false",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      getSearchFile(path);
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script>
+    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent) || (/Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent))) {
+      $("#background").css("background-attachment", "scroll");
+    }
+  </script>
+
+</body>
+</html>
